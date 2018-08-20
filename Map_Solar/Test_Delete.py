@@ -1,6 +1,8 @@
 from orionsdk import SwisClient
 import requests
 
+valid = False 
+
 while not valid:
 
     username = input ( "Username: " )
