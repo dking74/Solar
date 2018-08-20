@@ -31,11 +31,12 @@ results = solarwinds.query (    """
                                     TimeStamp,
                                     DisplayName,
                                     Description,
-                                    InstanceSiteId
+                                    InstanceSiteId,
+                                    Message
                                 FROM
                                     Orion.Events
                                 """
                             )
 
-for result in results [ 'results' ]:
+for result in results [ 'results' ][ 0 ]:
     print ( results [ 'results' ][ 0 ][ result ] )
