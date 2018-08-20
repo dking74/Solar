@@ -56,3 +56,4 @@ results = solarwinds.query (    """
 
 for result in range ( len ( results [ 'results' ][ 0 ])):
     print ( results [ 'results' ][ 0 ][ result ] )
+    print ( "\n" )
