@@ -566,3 +566,25 @@ class IntelligridMig ( ):
                 return "None"
             else:
                 return entity_uri
+
+    def findGroupList ( self ):
+
+        '''
+            Method name    : findGroupList
+        
+            Method Purpose : To get the names of all the groups
+        
+            Parameters     : None
+        
+            Returns        : The list of groups
+        '''
+
+        group_query = self._solarwinds.query (  """
+                                                SELECT
+                                                    Name
+                                                FROM
+                                                    Orion.Container
+                                                """
+                                             )
+
+        print ( group_query )
