@@ -123,7 +123,7 @@ class IntelligridMig ( ):
         # setup the base level groups and read the file
         self._setupBaseGroups          (      "Test"     )
         self._load_worksheet           ( self._inputFile )
-        #groupList = self.findGroupList (      "Test"     )
+        groupList = self.findGroupList (      "Test"     )
 
         # create list for holding all created entities and iterate through workbook
         createdList = []
@@ -225,14 +225,14 @@ class IntelligridMig ( ):
 
         # controller for finding filter
         if   len ( leg_info ) > 0 and len ( sit_info ) == 0:
-            filter_app = "filter:/Orion.Nodes [ STARTSWITH ( Caption, '{}' ) \
+            filter_app = "filter:/Orion.Nodes [ STARTSWITH ( SysName, '{}' ) \
                                               ]".format ( l_loc )
         elif len ( sit_info ) > 0 and len ( leg_info ) == 0:
-            filter_app = "filter:/Orion.Nodes [ STARTSWITH ( Caption, '{}' ) \
+            filter_app = "filter:/Orion.Nodes [ STARTSWITH ( SysName, '{}' ) \
                                               ]".format ( s_loc )
         elif len ( leg_info ) > 0 and len ( sit_info ) > 0 :
-            filter_app = "filter:/Orion.Nodes [ STARTSWITH ( Caption, '{}' ) or \
-                                                STARTSWITH ( Caption, '{}' ) \
+            filter_app = "filter:/Orion.Nodes [ STARTSWITH ( SysName, '{}' ) or \
+                                                STARTSWITH ( SysName, '{}' ) \
                                               ]".format ( l_loc , s_loc )
 
         return filter_app
@@ -421,6 +421,8 @@ class IntelligridMig ( ):
         # get container info to see if a group is present
         container = self.getGroupID ( group_name )
 
+
+        print ( *nodes )
         # there are no results, add the group
         if container == "None":
             try:
@@ -599,6 +601,5 @@ class IntelligridMig ( ):
         groupList = []
         for group_info in group_query [ 'results' ]:
            groupList.append ( group_info [ 'Name' ]  )
-
-        print ( groupList )
+           
         return groupList
