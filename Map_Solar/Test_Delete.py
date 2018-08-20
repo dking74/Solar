@@ -23,18 +23,31 @@ while not valid:
     except requests.exceptions.HTTPError:
         valid = False
 
+# results = solarwinds.query (    """
+#                                 SELECT
+#                                     EventID,
+#                                     EventTime,
+#                                     EventType,
+#                                     TimeStamp,
+#                                     DisplayName,
+#                                     Description,
+#                                     InstanceSiteId,
+#                                     Message
+#                                 FROM
+#                                     Orion.Events
+#                                 """
+#                             )
+
 results = solarwinds.query (    """
                                 SELECT
-                                    EventID,
-                                    EventTime,
-                                    EventType,
-                                    TimeStamp,
-                                    DisplayName,
-                                    Description,
-                                    InstanceSiteId,
-                                    Message
+                                    n.Name,
+                                    n.DisplayName,
+                                    n.Description,
+                                    n.Members.Name,
+                                    n.Members.FullName,
+                                    n.Members.Description
                                 FROM
-                                    Orion.Events
+                                    Orion.Container n
                                 """
                             )
 
