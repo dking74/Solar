@@ -3,6 +3,12 @@ import requests
 
 valid = False 
 
+verify = False
+if not verify:
+    from requests.packages.urllib3.exceptions import InsecureRequestWarning
+    requests.packages.urllib3.disable_warnings ( InsecureRequestWarning )
+
+
 while not valid:
 
     username = input ( "Username: " )
@@ -19,7 +25,6 @@ while not valid:
 
 results = solarwinds.query (    """
                                 SELECT
-                                    m.MACAddressInfo.MACAddress,
                                     m.Ports.Name
                                 FROM
                                     Orion.Nodes m
