@@ -40,10 +40,10 @@ while not valid:
 
 results = solarwinds.query (    """
                                 SELECT
-                                    n.Name,
-                                    n.DisplayName,
-                                    n.Description,
-                                    m.FullName,
+                                    n.Name as Contain_Name,
+                                    n.DisplayName as Contain_Display,
+                                    n.Description as Contain_Descrip,
+                                    m.FullName as Mem_Name
                                 FROM
                                     Orion.Container n
                                 INNER JOIN
