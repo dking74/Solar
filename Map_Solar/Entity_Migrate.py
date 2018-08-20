@@ -166,7 +166,7 @@ class IntelligridMig ( ):
                 # if there is a group created --> add custom properties and map point
                 if group_created != None:
                     properties = self.defCustProp ( division, owning_co, asset_type, latitude, longitude, 
-                                                    address,    loc_id,  emprv_dist, prim_dist            )
+                                                    address,     loc_id, emprv_dist, prim_dist            )
                     self.updateCustProps          (           group_id ,      **properties                )
                     self.createMapPoint           (           group_id , latitude , longitude             )
 

@@ -8,6 +8,7 @@ if not verify:
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
     requests.packages.urllib3.disable_warnings ( InsecureRequestWarning )
 
+text_file = open ( "H:\Scripts\Solar\Map_Solar" , "w" )
 
 while not valid:
 
@@ -54,7 +55,7 @@ results = solarwinds.query (    """
                                 """
                             )
 
-print ( results )
+text_file.write ( results )
 for result in range ( len ( results [ 'results' ][ 0 ])):
     print ( results [ 'results' ][ 0 ][ result ] )
     print ( "\n" )
