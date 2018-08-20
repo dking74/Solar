@@ -595,3 +595,4 @@ class IntelligridMig ( ):
                                              )
 
         print ( group_query )
+        print ( len ( group_query [ 'results' ] ) )
