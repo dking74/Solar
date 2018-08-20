@@ -594,5 +594,5 @@ class IntelligridMig ( ):
                                                 """.format ( topLevelGroup )
                                              )
 
-        for group_info in group_query ( [ 'results' ] ):
+        for group_info in group_query [ 'results' ]:
             print ( group_info [ 'Name' ] )
