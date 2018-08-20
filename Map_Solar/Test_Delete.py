@@ -23,16 +23,14 @@ while not valid:
     except requests.exceptions.HTTPError:
         valid = False
 
- #query = self._solarwinds.query ( "SELECT N.Name, M.Latitude FROM Orion.Groups N INNER JOIN Orion.WorldMap.Point M ON N.ContainerID=M.InstanceID")
-
 results = solarwinds.query (    """
                                 SELECT
-                                    n.MACCurrentInfo,
-                                    m.caption
+                                    n.MACAddressInfo.MACAddress,
+                                    m.Caption
                                 FROM
                                     Orion.Nodes m
                                 INNER JOIN
-                                    Orion.UDT.MACCurrentInfo n
+                                    Orion.UDT.MACAddressInfo n
                                 ON
                                     m.NodeID=n.NodeID
 
