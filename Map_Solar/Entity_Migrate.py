@@ -582,15 +582,15 @@ class IntelligridMig ( ):
 
         group_query = self._solarwinds.query (  """
                                                 SELECT
-                                                    child.Name
+                                                    c.Name
                                                 FROM
-                                                    Orion.Container top
+                                                    Orion.Container t
                                                 INNER JOIN
-                                                    Orion.ContainerMembers child
+                                                    Orion.ContainerMembers c
                                                 ON
-                                                    top.ContainerID=child.ContainerID
+                                                    t.ContainerID=c.ContainerID
                                                 WHERE
-                                                    top.Name='{}'
+                                                    t.Name='{}'
                                                 """.format ( topLevelGroup )
                                              )
 
