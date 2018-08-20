@@ -43,9 +43,7 @@ results = solarwinds.query (    """
                                     n.Name,
                                     n.DisplayName,
                                     n.Description,
-                                    m.Name,
                                     m.FullName,
-                                    m.Description
                                 FROM
                                     Orion.Container n
                                 INNER JOIN
