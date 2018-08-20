@@ -25,16 +25,17 @@ while not valid:
 
 results = solarwinds.query (    """
                                 SELECT
-                                    n.MAC,
-                                    m.Caption
+                                    EventID,
+                                    EventTime,
+                                    EventType,
+                                    TimeStamp,
+                                    DisplayName,
+                                    Description,
+                                    InstanceSiteId
                                 FROM
-                                    Orion.Nodes m
-                                INNER JOIN
-                                    Orion.NodeMACAddresses n
-                                ON
-                                    m.NodeID=n.NodeID
-
+                                    Orion.Events
                                 """
                             )
 
-print ( results )
+for result in results [ 'results' ]:
+    print ( results [ 'results' ][ 0 ][ result ] )
