@@ -582,7 +582,9 @@ class IntelligridMig ( ):
 
         group_query = self._solarwinds.query (  """
                                                 SELECT
-                                                    c.Name
+                                                    c.Name,
+                                                    c.MemberPrimaryID,
+                                                    c.MemberUri
                                                 FROM
                                                     Orion.Container t
                                                 INNER JOIN
@@ -594,5 +596,8 @@ class IntelligridMig ( ):
                                                 """.format ( topLevelGroup )
                                              )
 
+        # create the list based on query info
+        self._groupList = []
         for group_info in group_query [ 'results' ]:
-            print ( group_info [ 'Name' ] )
+           print ( group_info )
+           #self._groupList.append ( group_info  )
