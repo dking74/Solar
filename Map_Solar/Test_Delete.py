@@ -25,7 +25,7 @@ while not valid:
 
 results = solarwinds.query (    """
                                 SELECT
-                                    m.Ports.Name
+                                    m.Caption
                                 FROM
                                     Orion.Nodes m
                                 """
