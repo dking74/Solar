@@ -38,5 +38,4 @@ results = solarwinds.query (    """
                                 """
                             )
 
-for result in results [ 'results' ][ 0 ]:
-    print ( results [ 'results' ][ 0 ][ result ] )
+print ( results )
