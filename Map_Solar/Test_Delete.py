@@ -25,12 +25,12 @@ while not valid:
 
 results = solarwinds.query (    """
                                 SELECT
-                                    n.MACAddressInfo.MACAddress,
+                                    n.MAC,
                                     m.Caption
                                 FROM
                                     Orion.Nodes m
                                 INNER JOIN
-                                    Orion.UDT.MACAddressInfo n
+                                    Orion.NodeMACAddresses n
                                 ON
                                     m.NodeID=n.NodeID
 
