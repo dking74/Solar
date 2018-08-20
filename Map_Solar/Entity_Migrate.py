@@ -131,11 +131,7 @@ class IntelligridMig ( ):
 
             # get the column info from row
             legacy_loc = self._intelligridSheet.cell ( row=ROW , column=1  ).value
-            prefix     = self._intelligridSheet.cell ( row=ROW , column=2  ).value
-            action_req = self._intelligridSheet.cell ( row=ROW , column=3  ).value
-            urgency    = self._intelligridSheet.cell ( row=ROW , column=4  ).value
             site_id    = self._intelligridSheet.cell ( row=ROW , column=5  ).value
-            site_check = self._intelligridSheet.cell ( row=ROW , column=6  ).value
             loc_name   = self._intelligridSheet.cell ( row=ROW , column=7  ).value
             division   = self._intelligridSheet.cell ( row=ROW , column=8  ).value
             owning_co  = self._intelligridSheet.cell ( row=ROW , column=9  ).value
@@ -158,7 +154,7 @@ class IntelligridMig ( ):
                 # create strings for dynamic query
                 name      = "{}, {}".format     (                legacy_loc , site_id                   )                
                 filtering = self.__getFilter    ( legacy_info [ 'results' ] , site_info [ 'results' ] , \
-                                                  legacy_loc                , site_id                   )
+                                                                 legacy_loc , site_id                   )
 
                 # create a list containing the query for the group
                 node_list = [ { 'Name' : name, 'Definition' : filtering } ]
@@ -208,7 +204,7 @@ class IntelligridMig ( ):
              'Longitude': longitude
         }
 
-        # create the map point
+        # create the map point based on properties
         info = self._solarwinds.create ( 'Orion.WorldMap.Point', **properties )
 
     def __getFilter      ( self , leg_info , sit_info , l_loc , s_loc ):
@@ -587,9 +583,7 @@ class IntelligridMig ( ):
 
         group_query = self._solarwinds.query (  """
                                                 SELECT
-                                                    c.Name,
-                                                    c.MemberPrimaryID,
-                                                    c.MemberUri
+                                                    c.Name
                                                 FROM
                                                     Orion.Container t
                                                 INNER JOIN
@@ -604,7 +598,7 @@ class IntelligridMig ( ):
         # create the list based on query info
         groupList = []
         for group_info in group_query [ 'results' ]:
-           groupList.append ( group_info )
+           groupList.append ( group_info [ 'Name' ]  )
 
         print ( groupList )
         return groupList
