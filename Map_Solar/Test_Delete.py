@@ -8,7 +8,7 @@ if not verify:
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
     requests.packages.urllib3.disable_warnings ( InsecureRequestWarning )
 
-text_file = open ( "H:\Scripts\Solar\Map_Solar" , "w" )
+text_file = open ( "H:\\Scripts\\Solar\\Map_Solar" , "w" )
 
 while not valid:
 
