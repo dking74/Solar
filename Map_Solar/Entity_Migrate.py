@@ -121,10 +121,12 @@ class IntelligridMig ( ):
         '''
 
         # setup the base level groups and read the file
-        self._setupBaseGroups  (       "Test"    )
-        self._load_worksheet   ( self._inputFile )
+        self._setupBaseGroups          (      "Test"     )
+        self._load_worksheet           ( self._inputFile )
+        #groupList = self.findGroupList (      "Test"     )
 
-        # read every row in the book
+        # create list for holding all created entities and iterate through workbook
+        createdList = []
         for ROW in range ( 3 , self._intelligridSheet.max_row + 1 ):
 
             # get the column info from row
@@ -164,15 +166,17 @@ class IntelligridMig ( ):
                 # create the new group
                 group_created, group_id  = self.createGroup ( loc_name , loc_name , node_list )
 
-                # if there is a group created --> add custom properties and map point
+                # if there is a group created --> 
+                # 1. add to created list
+                # 2. add custom properties and map point
+                # 3. add group to base group
                 if group_created != None:
-                    properties = self.defCustProp ( division, owning_co, asset_type, latitude, longitude, 
-                                                    address,     loc_id, emprv_dist, prim_dist            )
-                    self.updateCustProps          (           group_id ,      **properties                )
-                    self.createMapPoint           (           group_id , latitude , longitude             )
-
-                    # add the new group to the test group
-                    self.addDefinitions ( self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] , group_created )
+                    createdList.append            (                             group_created                             )
+                    properties = self.defCustProp (           division, owning_co, asset_type, latitude, longitude, 
+                                                               address,     loc_id, emprv_dist, prim_dist                 )
+                    self.updateCustProps          (                    group_id ,      **properties                       )
+                    self.createMapPoint           (                    group_id , latitude , longitude                    )
+                    self.addDefinitions           ( self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] , group_created )
             else:
                 print ( "There were no nodes matching: {} or {}".format ( legacy_loc , site_id ) )
 
