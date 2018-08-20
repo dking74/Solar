@@ -597,7 +597,9 @@ class IntelligridMig ( ):
                                              )
 
         # create the list based on query info
-        self._groupList = []
+        groupList = []
         for group_info in group_query [ 'results' ]:
-           print ( group_info )
-           #self._groupList.append ( group_info  )
+           groupList.append ( group_info )
+
+        print ( groupList )
+        return groupList
