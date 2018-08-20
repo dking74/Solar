@@ -567,24 +567,31 @@ class IntelligridMig ( ):
             else:
                 return entity_uri
 
-    def findGroupList ( self ):
+    def findGroupList    ( self , topLevelGroup ):
 
         '''
-            Method name    : findGroupList
+            Method name         : findGroupList
         
-            Method Purpose : To get the names of all the groups
+            Method Purpose      : To get the names of all the groups
         
-            Parameters     : None
+            Parameters          :
+                - topLevelGroup :
         
-            Returns        : The list of groups
+            Returns             : The list of groups
         '''
 
         group_query = self._solarwinds.query (  """
                                                 SELECT
-                                                    Name
+                                                    child.Name
                                                 FROM
-                                                    Orion.Container
-                                                """
+                                                    Orion.Container top
+                                                INNER JOIN
+                                                    Orion.ContainerMembers child
+                                                ON
+                                                    top.ContainerID=child.ContainerID
+                                                WHERE
+                                                    top.Name='{}'
+                                                """.format ( topLevelGroup )
                                              )
 
         print ( group_query )
