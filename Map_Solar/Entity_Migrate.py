@@ -74,7 +74,7 @@ class IntelligridMig ( ):
             except requests.exceptions.HTTPError:
                 valid = False
 
-    def load_worksheet   ( self , file ):
+    def _load_worksheet  ( self , file ):
     
 
         '''
@@ -91,21 +91,22 @@ class IntelligridMig ( ):
         self._intelligridBook  = openpyxl.load_workbook ( file )
         self._intelligridSheet = self._intelligridBook.active
 
-    def _setupBaseGroups ( self ):
+    def _setupBaseGroups ( self , baseGroup ):
 
         '''
-            Method name    : _setupBaseGroups
+            Method name     : _setupBaseGroups
         
-            Method Purpose : To setup the the base groups for adding
+            Method Purpose  : To setup the the base groups for adding
         
-            Parameters     : None
+            Parameters      :
+                - baseGroup : The base-level group to create
         
-            Returns        : None
+            Returns         : None
         '''
 
         # get top level group
-        testGroup          = self.createGroup ( "Test" , "This is the test, base-level group" , [] )
-        self._testGroupID  = self.getGroupID  ( "Test" )
+        baseGroup          = self.createGroup ( baseGroup , "This is the base-level group" , [] )
+        self._baseGroupID  = self.getGroupID  ( baseGroup )
 
     def read_workbook    ( self ):
 
@@ -120,8 +121,8 @@ class IntelligridMig ( ):
         '''
 
         # setup the base level groups and read the file
-        self._setupBaseGroups  (                 )
-        self.load_worksheet    ( self._inputFile )
+        self._setupBaseGroups  (       "Test"    )
+        self._load_worksheet   ( self._inputFile )
 
         # read every row in the book
         for ROW in range ( 3 , self._intelligridSheet.max_row + 1 ):
@@ -171,7 +172,7 @@ class IntelligridMig ( ):
                     self.createMapPoint           (           group_id , latitude , longitude             )
 
                     # add the new group to the test group
-                    self.addDefinitions ( self._testGroupID [ 'results' ][ 0 ][ 'ContainerID' ] , group_created )
+                    self.addDefinitions ( self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] , group_created )
             else:
                 print ( "There were no nodes matching: {} or {}".format ( legacy_loc , site_id ) )
 
