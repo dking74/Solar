@@ -43,11 +43,15 @@ results = solarwinds.query (    """
                                     n.Name,
                                     n.DisplayName,
                                     n.Description,
-                                    n.Members.Name,
-                                    n.Members.FullName,
-                                    n.Members.Description
+                                    m.Name,
+                                    m.FullName,
+                                    m.Description
                                 FROM
                                     Orion.Container n
+                                INNER JOIN
+                                    Orion.ContainerMembers m
+                                ON
+                                    n.ContainerID=m.ContainerID
                                 """
                             )
 
