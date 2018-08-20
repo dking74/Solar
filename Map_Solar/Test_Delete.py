@@ -43,7 +43,8 @@ results = solarwinds.query (    """
                                     n.Name as Contain_Name,
                                     n.DisplayName as Contain_Display,
                                     n.Description as Contain_Descrip,
-                                    m.FullName as Mem_Name
+                                    m.FullName as Mem_Name,
+                                    m.EntityDisplayName as Ent_Name
                                 FROM
                                     Orion.Container n
                                 INNER JOIN
@@ -53,4 +54,5 @@ results = solarwinds.query (    """
                                 """
                             )
 
-print ( results )
+for result in range ( len ( results [ 'results' ][ 0 ])):
+    print ( results [ 'results' ][ 0 ][ result ] )
