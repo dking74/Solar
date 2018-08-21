@@ -293,8 +293,9 @@ class IntelligridMig ( ):
                                                     Orion.Nodes
                                                 WHERE
                                                     Caption
-                                                STARTSWITH ( str ( prop_val.lower ( ) ) )
-                                                """
+                                                LIKE
+                                                 '{}%'
+                                                """.format ( str ( prop_val.lower ( ) ) )
                                             )
 
         print ( results )
