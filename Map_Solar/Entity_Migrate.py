@@ -288,25 +288,26 @@ class IntelligridMig ( ):
         # find the correct node to update
         results = self._solarwinds.query    (   """
                                                 SELECT
-                                                    Uri,
-                                                    Caption
+                                                    n.Uri,
+                                                    n.Caption
                                                 FROM
-                                                    Orion.Nodes
+                                                    Orion.Nodes n
                                                 WHERE
-                                                    Caption
+                                                    n.Caption
                                                 LIKE
                                                  '{}%'
                                                 """.format ( str ( prop_val.lower ( ) ) )
                                             )
 
-        print ( results )
-
         # create a dictionary for the value to update
-        properties = { prop_name : "" }
+        #properties = { prop_name : prop_val }
 
         # update the entity with inputted properties
         for node in results [ 'results' ]:
-            self._solarwinds.update ( node [ 'Uri' ] + '/CustomProperties' , **properties )
+
+            props = self._solarwinds.read ( node [ 'Uri' ] + '/CustomProperties' )
+            print ( props )
+            #self._solarwinds.update ( node [ 'Uri' ] + '/CustomProperties' , **properties )
 
     def updateGroupProps  ( self , entity_id , **properties ):
 
