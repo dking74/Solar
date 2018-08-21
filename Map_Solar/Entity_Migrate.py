@@ -296,18 +296,19 @@ class IntelligridMig ( ):
         # update the entity with inputted properties
         self._solarwinds.update ( uri + '/CustomProperties' , **properties )
 
-    def createCustProps  ( self , **properties ):
+    def createCustProps  ( self , entity_type , **properties ):
 
         '''
-            Method name      : createCustProps
+            Method name       : createCustProps
         
-            Method Purpose   : To create a custom property in Solarwinds
-                             : for each item in the list
+            Method Purpose    : To create a custom property in Solarwinds
+                              : for each item in the list
         
-            Parameters       :
-                - properties : The list of properties to add
+            Parameters        :
+                - entity_type : The type that is being given the prop.
+                - properties  : The list of properties to add
         
-            Returns          : None
+            Returns           : None
         '''
 
         # iterate through each property
@@ -336,7 +337,7 @@ class IntelligridMig ( ):
                     size      = 100
 
                 self._solarwinds.invoke (   
-                                            'Orion.GroupCustomProperties',
+                                            entity_type,
                                             'CreateCustomProperty',
                                             prop,
                                             descr,
@@ -619,27 +620,3 @@ class IntelligridMig ( ):
                                         )
 
         return query [ 'results' ]
-
-    def getGroupMember ( self , group_name ):
-
-        group_query = self._solarwinds.query (  """
-                                                SELECT
-                                                    c.ContainerID,
-                                                    c.WebUri,
-                                                    c.DisplayName,
-                                                    c.Description,
-                                                    c.InstanceType,
-                                                    c.Uri
-                                                FROM
-                                                    Orion.Container t
-                                                INNER JOIN
-                                                    Orion.GroupsWebUri c
-                                                ON
-                                                    t.ContainerID=c.ContainerID
-                                                WHERE
-                                                    t.Name='{}'
-                                                """.format ( group_name ) 
-                                             )
-        print ( group_query [ 'results' ][ 0 ][ 'WebUri' ] )
-        info = self._solarwinds.read ( group_query [ 'results' ][ 0 ][ 'WebUri' ] + '/Uri' )
-        print ( info )
