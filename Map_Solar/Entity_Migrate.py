@@ -619,3 +619,19 @@ class IntelligridMig ( ):
                                         )
 
         return query [ 'results' ]
+
+    def getGroupMember ( self , group_name ):
+
+        group_query = self._solarwinds.query (  """
+                                                SELECT
+                                                    c.Name
+                                                FROM
+                                                    Orion.Container t
+                                                INNER JOIN
+                                                    Orion.ContainerMembers c
+                                                ON
+                                                    t.ContainerID=c.ContainerID
+                                                WHERE
+                                                    t.Name='{}'
+                                                """.format ( topLevelGroup )
+                                             )
