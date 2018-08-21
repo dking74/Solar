@@ -635,3 +635,5 @@ class IntelligridMig ( ):
                                                     t.Name='{}'
                                                 """.format ( topLevelGroup )
                                              )
+
+        print ( group_query )
