@@ -641,4 +641,5 @@ class IntelligridMig ( ):
                                                 """.format ( group_name ) 
                                              )
 
-        print ( group_query )
+        info = self._solarwinds.read ( group_query [ 'results' ][ 0 ][ 'WebUri' ] )
+        print ( info )
