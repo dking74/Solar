@@ -421,8 +421,7 @@ class IntelligridMig ( ):
         # get container info to see if a group is present
         container = self.getGroupID ( group_name )
 
-        print ( nodes )
-        print ( *nodes )
+        query = self._solarwinds.query 
 
         # there are no results, add the group
         if container == "None":
@@ -604,3 +603,19 @@ class IntelligridMig ( ):
            groupList.append ( group_info [ 'Name' ]  )
            
         return groupList
+
+    def findNodeList ( self , caption ):
+
+        query = self._solarwinds.query  (    """
+                                            SELECT
+                                                Caption
+                                            FROM
+                                                Orion.Nodes
+                                            WHERE
+                                                Caption
+                                            LIKE
+                                                '{}%'
+                                            """.format ( caption )
+                                        )
+
+        print ( query )
