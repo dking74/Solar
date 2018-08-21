@@ -663,85 +663,85 @@ class IntelligridMig  ( ):
 
         return query [ 'results' ]
 
-class SolarProperties ( ABC ):
+# class SolarProperties ( ABC ):
 
-    @abstractmethod
-    def getProperties    ( self , name ):
-        ''' To be implemented in child classes '''
-        pass
+#     @abstractmethod
+#     def getProperties    ( self , name ):
+#         ''' To be implemented in child classes '''
+#         pass
 
-    @abstractmethod
-    def createProperties ( self , name ):
-        ''' To be implemented in child classes '''
-        pass
+#     @abstractmethod
+#     def createProperties ( self , name ):
+#         ''' To be implemented in child classes '''
+#         pass
 
-    @abstractmethod
-    def deleteProperties ( self , name ):
-        ''' To be implemented in child classes '''
-        pass
+#     @abstractmethod
+#     def deleteProperties ( self , name ):
+#         ''' To be implemented in child classes '''
+#         pass
     
-    @abstractmethod
-    def updateProperites ( self , name ):
-        ''' To be implented in child classes '''
-        pass
+#     @abstractmethod
+#     def updateProperites ( self , name ):
+#         ''' To be implented in child classes '''
+#         pass
 
-class NodeProperties  ( SolarProperties ):
+# class NodeProperties  ( SolarProperties ):
 
-    '''
-        Class Name    : NodeProperties
-    	Class Purpose : To allow for updating node properties
-    '''
+#     '''
+#         Class Name    : NodeProperties
+#     	Class Purpose : To allow for updating node properties
+#     '''
 
-    def __init__ ( self , solarwinds_instance ):
+#     def __init__ ( self , solarwinds_instance ):
 
-        '''
-            Method name               : __init__
+#         '''
+#             Method name               : __init__
         
-            Method Purpose            : To initialize a node instance
+#             Method Purpose            : To initialize a node instance
         
-            Parameters                :
-                - solarwinds_instance : The solarwinds login object
+#             Parameters                :
+#                 - solarwinds_instance : The solarwinds login object
         
-            Returns                   : NONE
-        '''
+#             Returns                   : NONE
+#         '''
 
-        self._solar = solarwinds_instance
+#         self._solar = solarwinds_instance
 
-    def getProperties    ( self , name ):
+#     def getProperties    ( self , name ):
 
-    def createProperties ( self , name ):
+#     def createProperties ( self , name ):
 
-    def deleteProperties ( self , name ):
+#     def deleteProperties ( self , name ):
 
-    def updateProperites ( self , name ):
+#     def updateProperites ( self , name ):
 
-class GroupProperties ( SolarProperties ):
+# class GroupProperties ( SolarProperties ):
 
-    '''
-        Class Name    : GroupProperties
-    	Class Purpose : To allow for updating group properties
-    '''
+#     '''
+#         Class Name    : GroupProperties
+#     	Class Purpose : To allow for updating group properties
+#     '''
 
-    def __init__ ( self , group_name ):
+#     def __init__ ( self , group_name ):
 
-        '''
-            Method name    : __init__
+#         '''
+#             Method name    : __init__
         
-            Method Purpose : To initialize the group properties
+#             Method Purpose : To initialize the group properties
         
-            Parameters     :
-                - solarwinds_instance : The solarwinds login object
+#             Parameters     :
+#                 - solarwinds_instance : The solarwinds login object
         
-            Returns        : NONE
-        '''
+#             Returns        : NONE
+#         '''
 
-        self._solar = solarwinds_instance
+#         self._solar = solarwinds_instance
 
-    def getProperties    ( self , name ):
+#     def getProperties    ( self , name ):
 
-    def createProperties ( self , name ):
+#     def createProperties ( self , name ):
 
-    def deleteProperties ( self , name ):
+#     def deleteProperties ( self , name ):
 
-    def updateProperites ( self , name ):
+#     def updateProperites ( self , name ):
     
