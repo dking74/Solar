@@ -144,8 +144,8 @@ class IntelligridMig ( ):
             prim_dist  = self._intelligridSheet.cell ( row=ROW , column=16 ).value 
 
             # get the information for existing nodes
-            legacy_info = self.detExistingNode ( legacy_loc )
-            site_info   = self.detExistingNode (   site_id  )
+            legacy_info = self.detExistingNode ( legacy_loc )[ 'results' ]
+            site_info   = self.detExistingNode (   site_id  )[ 'results' ]
             node_info   = [ legacy_info , site_info ]
             
             for node in node_info:
