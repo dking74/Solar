@@ -136,10 +136,6 @@ class IntelligridMig  ( ):
             legacy_info = self.detExistingNode ( legacy_loc )[ 'results' ]
             site_info   = self.detExistingNode (   site_id  )[ 'results' ]
 
-            # update the properties for all nodes
-            self.updateNodeProps ( legacy_loc , "Container" )
-            self.updateNodeProps (    site_id , "Container" )
-
             # if there are entities found --> add the entries to a list
             if len ( legacy_info [ 'results' ] ) > 0 or \
                len ( site_info   [ 'results' ] ) > 0:
@@ -221,15 +217,11 @@ class IntelligridMig  ( ):
 
         # controller for finding filter
         if   len ( leg_info ) > 0 and len ( sit_info ) == 0:
-            filter_app = "filter:/Orion.Nodes [filter_prop='{}' \
-                                              ]".format ( l_loc )
+            filter_app = "filter:/Orion.Nodes [filter_prop='{}']".format ( l_loc )
         elif len ( sit_info ) > 0 and len ( leg_info ) == 0:
-            filter_app = "filter:/Orion.Nodes [filter_prop='{}' \
-                                              ]".format ( s_loc )
+            filter_app = "filter:/Orion.Nodes [filter_prop='{}']".format ( s_loc )
         elif len ( leg_info ) > 0 and len ( sit_info ) > 0 :
-            filter_app = "filter:/Orion.Nodes [filter_prop='{}' or \
-                                               filter_prop='{}'    \
-                                              ]".format ( l_loc , s_loc )
+            filter_app = "filter:/Orion.Nodes [filter_prop='{}' or filter_prop='{}']".format ( l_loc , s_loc )
 
         return filter_app
 
@@ -260,54 +252,7 @@ class IntelligridMig  ( ):
                                                     """.format ( str ( check_str ).lower ( ) ) 
                                                 )  
 
-        return query_res  
-
-    def updateNodeProps   ( self , search_val , prop_name , prop_val ):
-
-        '''
-            Method name      : updateNodeProps
-        
-            Method Purpose   : To update a certain node property
-        
-            Parameters       :
-                - search_val : The value to search for
-                - prop_val   : The property value
-                - prop_name  : The property to update 
-        
-            Returns          : None
-        '''
-
-        # find the correct node to update
-        results = self._solarwinds.query    (   """
-                                                SELECT
-                                                    n.Uri,
-                                                    n.Caption
-                                                FROM
-                                                    Orion.Nodes n
-                                                WHERE
-                                                    n.Caption
-                                                LIKE
-                                                 '{}%'
-                                                """.format ( str ( search_val.lower ( ) ) )
-                                            )
-
-        # create a dictionary for the value to update
-        properties = { prop_name : prop_val }
-
-        # update the entity with inputted properties
-        for node in results [ 'results' ]:
-
-            # get the current properties of the node
-            uri = node [ 'Uri' ]
-            props = self._solarwinds.read ( uri + '/CustomProperties' )
-
-            # try to update the properties only if there are none currently
-            try: 
-                if props [ prop_name ] == "":
-                    self._solarwinds.update ( uri + '/CustomProperties' , **properties )
-
-            except Exception:
-                print ( "Unable to update property for node: %s" % search_val )
+        return query_res          
 
     def updateGroupProps  ( self , entity_id , **properties ):
 
