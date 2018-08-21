@@ -288,7 +288,8 @@ class IntelligridMig ( ):
         # find the correct node to update
         results = self._solarwinds.query    (   """
                                                 SELECT
-                                                    Uri
+                                                    Uri,
+                                                    Caption
                                                 FROM
                                                     Orion.Nodes
                                                 WHERE
