@@ -434,7 +434,7 @@ class IntelligridMig ( ):
                             0,
                             description,
                             True,
-                            nodes
+                            **nodes
                         )
 
             # check if the group is unable to be added
