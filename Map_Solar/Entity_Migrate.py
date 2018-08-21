@@ -402,7 +402,7 @@ class IntelligridMig ( ):
 
         return cust_prop
 
-    def createGroup      ( self , group_name, description, *nodes ):
+    def createGroup      ( self , group_name, description, **nodes ):
 
         '''
             Method name        : createGroup
@@ -421,6 +421,7 @@ class IntelligridMig ( ):
         # get container info to see if a group is present
         container = self.getGroupID ( group_name )
 
+        print ( nodes )
         # there are no results, add the group
         if container == "None":
             try:
@@ -433,7 +434,7 @@ class IntelligridMig ( ):
                             0,
                             description,
                             True,
-                            *nodes
+                            nodes
                         )
 
             # check if the group is unable to be added
