@@ -225,14 +225,14 @@ class IntelligridMig ( ):
 
         # controller for finding filter
         if   len ( leg_info ) > 0 and len ( sit_info ) == 0:
-            filter_app = "filter:/Orion.Nodes [ STARTSWITH ( SysName, '{}' ) \
+            filter_app = "filter:/Orion.Nodes [ StartsWith ( SysName, '{}' ) \
                                               ]".format ( l_loc )
         elif len ( sit_info ) > 0 and len ( leg_info ) == 0:
-            filter_app = "filter:/Orion.Nodes [ STARTSWITH ( SysName, '{}' ) \
+            filter_app = "filter:/Orion.Nodes [ StartsWith ( SysName, '{}' ) \
                                               ]".format ( s_loc )
         elif len ( leg_info ) > 0 and len ( sit_info ) > 0 :
-            filter_app = "filter:/Orion.Nodes [ STARTSWITH ( SysName, '{}' ) or \
-                                                STARTSWITH ( SysName, '{}' ) \
+            filter_app = "filter:/Orion.Nodes [ StartsWith ( SysName, '{}' ) or \
+                                                StartsWith ( SysName, '{}' )    \
                                               ]".format ( l_loc , s_loc )
 
         return filter_app
@@ -420,7 +420,6 @@ class IntelligridMig ( ):
 
         # get container info to see if a group is present
         container = self.getGroupID ( group_name )
-
 
         print ( *nodes )
         # there are no results, add the group
