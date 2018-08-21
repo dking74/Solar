@@ -146,10 +146,10 @@ class IntelligridMig ( ):
             # get the information for existing nodes
             legacy_info = self.detExistingNode ( legacy_loc )[ 'results' ]
             site_info   = self.detExistingNode (   site_id  )[ 'results' ]
-            node_info   = legacy_info + site_info
-            
-            for node in node_info:
-                self.updateNodeProps ( node , "Container" )
+
+            # update the properties for all nodes
+            self.updateNodeProps ( legacy_loc , "Container" )
+            self.updateNodeProps (    site_id , "Container" )
 
             # if there are entities found --> add the entries to a list
             if len ( legacy_info [ 'results' ] ) > 0 or \
@@ -299,7 +299,7 @@ class IntelligridMig ( ):
                                             )
 
         # create a dictionary for the value to update
-        properties = { prop_name : prop_val }
+        properties = { prop_name : "" }
 
         # update the entity with inputted properties
         for node in results [ 'results' ]:
