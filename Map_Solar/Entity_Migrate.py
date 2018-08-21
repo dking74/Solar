@@ -421,16 +421,6 @@ class IntelligridMig ( ):
         # get container info to see if a group is present
         container = self.getGroupID ( group_name )
 
-        query = self._solarwinds.query  (   """
-                                            SELECT
-                                                InstanceType
-                                            FROM
-                                                Orion.Nodes
-                                            """
-                                        )
-
-        print ( query )
-
         # there are no results, add the group
         if container == "None":
             try:
