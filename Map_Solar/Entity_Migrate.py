@@ -624,16 +624,21 @@ class IntelligridMig ( ):
 
         group_query = self._solarwinds.query (  """
                                                 SELECT
-                                                    c.Name
+                                                    c.ContainerID,
+                                                    c.WebUri,
+                                                    c.DisplayName,
+                                                    c.Description,
+                                                    c.InstanceType,
+                                                    c.Uri
                                                 FROM
                                                     Orion.Container t
                                                 INNER JOIN
-                                                    Orion.ContainerMembers c
+                                                    Orion.GroupsWebUri c
                                                 ON
                                                     t.ContainerID=c.ContainerID
                                                 WHERE
                                                     t.Name='{}'
-                                                """.format ( group_name)
+                                                """.format ( group_name ) 
                                              )
 
         print ( group_query )
