@@ -305,9 +305,10 @@ class IntelligridMig ( ):
         # update the entity with inputted properties
         for node in results [ 'results' ]:
 
-            props = self._solarwinds.read ( node [ 'Uri' ] + '/CustomProperties' )
-            print ( props )
-            #self._solarwinds.update ( node [ 'Uri' ] + '/CustomProperties' , **properties )
+            uri = node [ 'Uri' ]
+            props = self._solarwinds.read ( uri + '/CustomProperties' )
+            print ( props [ 'Container' ] )
+            #self._solarwinds.update ( uri + '/CustomProperties' , **properties )
 
     def updateGroupProps  ( self , entity_id , **properties ):
 
