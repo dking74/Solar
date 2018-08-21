@@ -306,10 +306,17 @@ class IntelligridMig ( ):
         # update the entity with inputted properties
         for node in results [ 'results' ]:
 
+            # get the current properties of the node
             uri = node [ 'Uri' ]
             props = self._solarwinds.read ( uri + '/CustomProperties' )
-            print ( props [ 'Container' ] )
-            self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+
+            # try to update the properties only if there are none currently
+            try: 
+                if props [ prop_name ] == ""
+                    self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+
+            except Exception:
+                print ( "Unable to update property for node: %s" % search_val )
 
     def updateGroupProps  ( self , entity_id , **properties ):
 
