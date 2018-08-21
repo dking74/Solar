@@ -33,18 +33,6 @@ class IntelligridMig ( ):
         self.loginSolar ( )
         self._inputFile = inputFile
 
-        query = self._solarwinds.query  (   """
-                                            SELECT
-                                                DisplayName,
-                                                Description,
-                                                DataType,
-                                                Field,
-                                                Default
-                                            FROM
-                                                Orion.CustomProperty
-                                            """
-                                        )
-
     def loginSolar        ( self ):
 
         '''
