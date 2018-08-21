@@ -292,11 +292,11 @@ class IntelligridMig ( ):
                                                 FROM
                                                     Orion.Nodes
                                                 WHERE
-                                                    Caption
-                                                LIKE
-                                                    '{}%'
-                                                """.format ( str ( prop_val.lower ( ) ) )
+                                                STARTSWITH ( Caption , str ( prop_val.lower ( ) ) )
+                                                """
                                             )
+
+        print ( results )
 
         # create a dictionary for the value to update
         properties = { prop_name : "" }
