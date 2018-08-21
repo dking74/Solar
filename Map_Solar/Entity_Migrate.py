@@ -10,7 +10,7 @@ class IntelligridMig ( ):
         Class Purpose : To migrate entities from Excel to Solarwinds
     '''
 
-    def __init__         ( self , inputFile ):
+    def __init__          ( self , inputFile ):
 
         '''
             Method name    : __init__
@@ -45,7 +45,7 @@ class IntelligridMig ( ):
                                             """
                                         )
 
-    def loginSolar       ( self ):
+    def loginSolar        ( self ):
 
         '''
             Method name    : loginSolar
@@ -74,7 +74,7 @@ class IntelligridMig ( ):
             except requests.exceptions.HTTPError:
                 valid = False
 
-    def _load_worksheet  ( self , file ):
+    def _load_worksheet   ( self , file ):
     
 
         '''
@@ -91,7 +91,7 @@ class IntelligridMig ( ):
         self._intelligridBook  = openpyxl.load_workbook ( file )
         self._intelligridSheet = self._intelligridBook.active
 
-    def _setupBaseGroups ( self , baseGroup ):
+    def _setupBaseGroups  ( self , baseGroup ):
 
         '''
             Method name     : _setupBaseGroups
@@ -108,7 +108,7 @@ class IntelligridMig ( ):
         baseGroup          = self.createGroup ( baseGroup , "This is the base-level group" , [] )
         self._baseGroupID  = self.getGroupID  ( baseGroup )
 
-    def read_workbook    ( self ):
+    def read_workbook     ( self ):
 
         '''
             Method name    : read_workbook
@@ -146,6 +146,10 @@ class IntelligridMig ( ):
             # get the information for existing nodes
             legacy_info = self.detExistingNode ( legacy_loc )
             site_info   = self.detExistingNode (   site_id  )
+            node_info   = [ legacy_info , site_info ]
+            
+            for node in node_info:
+                self.updateNodeProps ( node , "Container" )
 
             # if there are entities found --> add the entries to a list
             if len ( legacy_info [ 'results' ] ) > 0 or \
@@ -161,22 +165,23 @@ class IntelligridMig ( ):
 
                 # create the new group
                 group_created, group_id  = self.createGroup ( loc_name , loc_name , node_list )
-
+                
+                # update properties of group, whether just created or already created
+                properties = self.defGroupProp (           division, owning_co, asset_type, latitude, longitude, 
+                                                               address,     loc_id, emprv_dist, prim_dist                 )
+                self.updateGroupProps          (                    group_id ,      **properties                       )
+                self.createMapPoint            (                    group_id , latitude , longitude                    )
+                
                 # if there is a group created --> 
                 # 1. add to created list
-                # 2. add custom properties and map point
-                # 3. add group to base group
+                # 2. add group to base group
                 if group_created != None:
                     createdList.append            (                             group_created                             )
-                    properties = self.defCustProp (           division, owning_co, asset_type, latitude, longitude, 
-                                                               address,     loc_id, emprv_dist, prim_dist                 )
-                    self.updateCustProps          (                    group_id ,      **properties                       )
-                    self.createMapPoint           (                    group_id , latitude , longitude                    )
                     self.addDefinitions           ( self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] , group_created )
             else:
                 print ( "There were no nodes matching: {} or {}".format ( legacy_loc , site_id ) )
 
-    def createMapPoint   ( self, group_id , latitude , longitude ):
+    def createMapPoint    ( self, group_id , latitude , longitude ):
 
         '''
             Method name      : updateMapPoint
@@ -207,7 +212,7 @@ class IntelligridMig ( ):
         # create the map point based on properties
         info = self._solarwinds.create ( 'Orion.WorldMap.Point', **properties )
 
-    def __getFilter      ( self , leg_info , sit_info , l_loc , s_loc ):
+    def __getFilter       ( self , leg_info , sit_info , l_loc , s_loc ):
 
         '''
             Method name    : __getFilter
@@ -237,7 +242,7 @@ class IntelligridMig ( ):
 
         return filter_app
 
-    def detExistingNode  ( self , check_str ):
+    def detExistingNode   ( self , check_str ):
 
         '''
             Method name     : detExistingNode
@@ -254,7 +259,8 @@ class IntelligridMig ( ):
         if check_str != '':
             query_res = self._solarwinds.query (    """
                                                     SELECT
-                                                        Caption
+                                                        Caption,
+                                                        Uri
                                                     FROM 
                                                         Orion.Nodes 
                                                     WHERE
@@ -265,7 +271,41 @@ class IntelligridMig ( ):
 
         return query_res  
 
-    def updateCustProps  ( self , entity_id , **properties ):
+    def updateNodeProps   ( self , prop_val , prop_name ):
+
+        '''
+            Method name    : updateNodeProps
+        
+            Method Purpose : To update a certain node property
+        
+            Parameters     :
+                - prop_val : The property value
+                - prop_name: The property to update 
+        
+            Returns        : None
+        '''
+
+        # find the correct node to update
+        results = self._solarwinds.query    (   """
+                                                SELECT
+                                                    Uri
+                                                FROM
+                                                    Orion.Nodes
+                                                WHERE
+                                                    Caption
+                                                LIKE
+                                                    '{}%'
+                                                """.format ( str ( prop_val.lower ( ) ) )
+                                            )
+
+        # create a dictionary for the value to update
+        properties = { prop_name : prop_val }
+
+        # update the entity with inputted properties
+        for node in results [ 'results' ]:
+            self._solarwinds.update ( node [ 'Uri' ] + '/CustomProperties' , **properties )
+
+    def updateGroupProps  ( self , entity_id , **properties ):
 
         '''
             Method name      : updateCustProps
@@ -296,7 +336,56 @@ class IntelligridMig ( ):
         # update the entity with inputted properties
         self._solarwinds.update ( uri + '/CustomProperties' , **properties )
 
-    def createCustProps  ( self , entity_type , **properties ):
+    def defGroupProp      ( self , division=None, owning_co=None, asset_type=None, latitude=None, longitude=None,
+                             address=None, loc_id=None , emprv_dist=None , prim_dist=None ):
+
+        '''
+            Method name      : defCustProp
+        
+            Method Purpose   : To create a list of custom properties for Solarwinds
+        
+            Parameters       :
+                - division   : The division of the area
+                - owning_co  : The company that owns the resource
+                - asset_type : What kind of asset it is 
+                - latitude   : The latitude location of resource
+                - longitude  : The longitude location of resource
+                - address    : The address (or notes) for area
+                - loc_id     : The id given to location
+                - emprv_dist : EMPRV info
+                - prim_dist  : PRIMAVERA info
+        
+            Returns          : The dictionary containing the properties
+        '''
+
+        # build dictionary based on info
+        cust_prop = {
+
+            'Division'        : division,
+            'Owning_Company'  : owning_co,
+            'Asset_Type'      : asset_type,
+            'Latitude'        : latitude,
+            'Longitude'       : longitude,
+            'Address'         : address,
+            'Location_ID'     : loc_id,
+            'EMPRV_Dist'      : emprv_dist,
+            'Primavera_Dist'  : prim_dist
+        }
+
+        # iterate through each custom property and determine if there is an empty value
+        # if so --> keep a list of every item to be deleted
+        del_items = []
+        for k, v in cust_prop.items ( ):
+            if v == '' or v == None:
+                del_items.append ( k )
+
+        # delete all unnecessary items
+        for item in del_items:
+            cust_prop.pop ( item )
+
+        return cust_prop
+
+    def createCustProps   ( self , entity_type , **properties ):
 
         '''
             Method name       : createCustProps
@@ -354,56 +443,7 @@ class IntelligridMig ( ):
             else:
                 print ( "Custom property already exists for: {}".format ( prop ) )
 
-    def defCustProp      ( self , division=None, owning_co=None, asset_type=None, latitude=None, longitude=None,
-                             address=None, loc_id=None , emprv_dist=None , prim_dist=None ):
-
-        '''
-            Method name      : defCustProp
-        
-            Method Purpose   : To create a list of custom properties for Solarwinds
-        
-            Parameters       :
-                - division   : The division of the area
-                - owning_co  : The company that owns the resource
-                - asset_type : What kind of asset it is 
-                - latitude   : The latitude location of resource
-                - longitude  : The longitude location of resource
-                - address    : The address (or notes) for area
-                - loc_id     : The id given to location
-                - emprv_dist : EMPRV info
-                - prim_dist  : PRIMAVERA info
-        
-            Returns          : The dictionary containing the properties
-        '''
-
-        # build dictionary based on info
-        cust_prop = {
-
-            'Division'        : division,
-            'Owning_Company'  : owning_co,
-            'Asset_Type'      : asset_type,
-            'Latitude'        : latitude,
-            'Longitude'       : longitude,
-            'Address'         : address,
-            'Location_ID'     : loc_id,
-            'EMPRV_Dist'      : emprv_dist,
-            'Primavera_Dist'  : prim_dist
-        }
-
-        # iterate through each custom property and determine if there is an empty value
-        # if so --> keep a list of every item to be deleted
-        del_items = []
-        for k, v in cust_prop.items ( ):
-            if v == '' or v == None:
-                del_items.append ( k )
-
-        # delete all unnecessary items
-        for item in del_items:
-            cust_prop.pop ( item )
-
-        return cust_prop
-
-    def createGroup      ( self , group_name, description, *nodes ):
+    def createGroup       ( self , group_name, description, *nodes ):
 
         '''
             Method name        : createGroup
@@ -421,8 +461,6 @@ class IntelligridMig ( ):
 
         # get container info to see if a group is present
         container = self.getGroupID ( group_name )
-
-        query = self._solarwinds.query 
 
         # there are no results, add the group
         if container == "None":
@@ -469,7 +507,7 @@ class IntelligridMig ( ):
             )
             return group_info, container [ 'results' ][ 0 ][ 'ContainerID' ]
 
-    def addDefinitions   ( self , id_num , *args ):
+    def addDefinitions    ( self , id_num , *args ):
 
         '''
             Method name    : addDefinitions
@@ -504,7 +542,7 @@ class IntelligridMig ( ):
                 *args
             )
 
-    def deleteGroup      ( self , name ):
+    def deleteGroup       ( self , name ):
 
         '''
             Method name    : deleteEntity
@@ -534,7 +572,7 @@ class IntelligridMig ( ):
                                                     )
             return True
 
-    def getGroupID       ( self , name ):
+    def getGroupID        ( self , name ):
 
         '''
             Method name    : getGroupID
@@ -571,7 +609,7 @@ class IntelligridMig ( ):
             else:
                 return entity_uri
 
-    def findGroupList    ( self , topLevelGroup ):
+    def findGroupList     ( self , topLevelGroup ):
 
         '''
             Method name         : findGroupList
@@ -605,7 +643,7 @@ class IntelligridMig ( ):
            
         return groupList
 
-    def findNodeList ( self , caption ):
+    def findNodeList      ( self , caption ):
 
         query = self._solarwinds.query  (    """
                                             SELECT
