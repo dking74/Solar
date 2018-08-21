@@ -300,15 +300,15 @@ class IntelligridMig ( ):
                                             )
 
         # create a dictionary for the value to update
-        #properties = { prop_name : prop_val }
+        properties = { prop_name : prop_val }
 
         # update the entity with inputted properties
         for node in results [ 'results' ]:
 
             uri = node [ 'Uri' ]
-            props = self._solarwinds.read ( uri + '/CustomProperties' )
-            print ( props [ 'Container' ] )
-            #self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+            #props = self._solarwinds.read ( uri + '/CustomProperties' )
+            #print ( props [ 'Container' ] )
+            self._solarwinds.update ( uri + '/CustomProperties' , **properties )
 
     def updateGroupProps  ( self , entity_id , **properties ):
 
