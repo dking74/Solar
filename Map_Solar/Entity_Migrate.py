@@ -292,7 +292,8 @@ class IntelligridMig ( ):
                                                 FROM
                                                     Orion.Nodes
                                                 WHERE
-                                                STARTSWITH ( Caption , str ( prop_val.lower ( ) ) )
+                                                    Caption
+                                                STARTSWITH ( str ( prop_val.lower ( ) ) )
                                                 """
                                             )
 
