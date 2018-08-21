@@ -271,18 +271,19 @@ class IntelligridMig ( ):
 
         return query_res  
 
-    def updateNodeProps   ( self , prop_val , prop_name ):
+    def updateNodeProps   ( self , search_val , prop_name , prop_val ):
 
         '''
-            Method name    : updateNodeProps
+            Method name      : updateNodeProps
         
-            Method Purpose : To update a certain node property
+            Method Purpose   : To update a certain node property
         
-            Parameters     :
-                - prop_val : The property value
-                - prop_name: The property to update 
+            Parameters       :
+                - search_val : The value to search for
+                - prop_val   : The property value
+                - prop_name  : The property to update 
         
-            Returns        : None
+            Returns          : None
         '''
 
         # find the correct node to update
@@ -296,7 +297,7 @@ class IntelligridMig ( ):
                                                     n.Caption
                                                 LIKE
                                                  '{}%'
-                                                """.format ( str ( prop_val.lower ( ) ) )
+                                                """.format ( str ( search_val.lower ( ) ) )
                                             )
 
         # create a dictionary for the value to update
@@ -306,8 +307,8 @@ class IntelligridMig ( ):
         for node in results [ 'results' ]:
 
             uri = node [ 'Uri' ]
-            #props = self._solarwinds.read ( uri + '/CustomProperties' )
-            #print ( props [ 'Container' ] )
+            props = self._solarwinds.read ( uri + '/CustomProperties' )
+            print ( props [ 'Container' ] )
             self._solarwinds.update ( uri + '/CustomProperties' , **properties )
 
     def updateGroupProps  ( self , entity_id , **properties ):
