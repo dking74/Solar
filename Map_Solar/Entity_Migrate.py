@@ -641,5 +641,5 @@ class IntelligridMig ( ):
                                                 """.format ( group_name ) 
                                              )
         print ( group_query [ 'results' ][ 0 ][ 'WebUri' ] )
-        info = self._solarwinds.read ( "swis://PLZNTPVSWM01.corp.dir.ameren.com/" + group_query [ 'results' ][ 0 ][ 'WebUri' ] )
+        info = self._solarwinds.read ( "swis://PLZNTPVSWM01.corp.dir.ameren.com" + group_query [ 'results' ][ 0 ][ 'WebUri' ] )
         print ( info )
