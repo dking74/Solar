@@ -633,7 +633,7 @@ class IntelligridMig ( ):
                                                     t.ContainerID=c.ContainerID
                                                 WHERE
                                                     t.Name='{}'
-                                                """.format ( topLevelGroup )
+                                                """.format ( group_name)
                                              )
 
         print ( group_query )
