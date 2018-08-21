@@ -592,22 +592,6 @@ class IntelligridMig  ( ):
            
         return groupList
 
-    def findNodeList      ( self , caption ):
-
-        query = self._solarwinds.query  (    """
-                                            SELECT
-                                                Caption
-                                            FROM
-                                                Orion.Nodes
-                                            WHERE
-                                                Caption
-                                            LIKE
-                                                '{}%'
-                                            """.format ( caption )
-                                        )
-
-        return query [ 'results' ]
-
 # class SolarProperties ( ABC ):
 
 #     @abstractmethod
