@@ -618,4 +618,4 @@ class IntelligridMig ( ):
                                             """.format ( caption )
                                         )
 
-        print ( query )
+        return query [ 'results' ]
