@@ -145,7 +145,7 @@ class IntelligridMig  ( ):
                 filtering = self.__getFilter    (           legacy_info [ 'results' ] ,                 \
                                                               site_info [ 'results' ] ,                 \
                                                                  legacy_loc , site_id ,                 \
-                                                             "CustomProperties.Container"               )
+                                                                        "Orion.Nodes"                   )
 
                 # create a list containing the query for the group
                 node_list = [ { 'Name' : name, 'Definition' : filtering } ]
@@ -217,11 +217,11 @@ class IntelligridMig  ( ):
 
         # controller for finding filter
         if   len ( leg_info ) > 0 and len ( sit_info ) == 0:
-            filter_app = "filter:/Orion.Nodes [filter_prop='{}']".format ( l_loc )
+            filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}')]".format ( l_loc )
         elif len ( sit_info ) > 0 and len ( leg_info ) == 0:
-            filter_app = "filter:/Orion.Nodes [filter_prop='{}']".format ( s_loc )
+            filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}')]".format ( s_loc )
         elif len ( leg_info ) > 0 and len ( sit_info ) > 0 :
-            filter_app = "filter:/Orion.Nodes [filter_prop='{}' or filter_prop='{}']".format ( l_loc , s_loc )
+            filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}') or StartsWith(SysName,'{}')]".format ( l_loc , s_loc )
 
         return filter_app
 
