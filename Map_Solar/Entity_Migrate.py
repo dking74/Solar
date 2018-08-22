@@ -602,11 +602,10 @@ class IntelligridMig  ( ):
 
         results = self._solarwinds.query    (   """
                                                 SELECT
-                                                    Message,
-                                                    MessageType,
-                                                    DateTime
+                                                    Name,
+                                                    Description
                                                 FROM 
-                                                    Orion.SysLog
+                                                    Orion.SwisFeature
                                                 """
                                             )
         print ( results )
