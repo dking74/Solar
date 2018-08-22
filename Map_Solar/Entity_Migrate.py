@@ -603,9 +603,15 @@ class IntelligridMig  ( ):
         results = self._solarwinds.query    (   """
                                                 SELECT
                                                     c.MAC,
-                                                    c.DisplayName
+                                                    x.Caption
+                                                    c.Description,
+                                                    c.Uri
                                                 FROM 
                                                     Orion.NodeMACAddresses c
+                                                INNER JOIN
+                                                    Orion.Nodes x
+                                                ON
+                                                    c.NodeID=x.NodeID
                                                 """
                                             )
 
