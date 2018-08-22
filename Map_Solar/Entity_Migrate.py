@@ -636,7 +636,8 @@ class IntelligridMig  ( ):
                                             SELECT
                                                 r.Node.Caption,
                                                 r.DateTime,
-                                                r.Availability
+                                                r.Availability,
+                                                getdate() as Date
                                             FROM
                                                 Orion.ResponseTime r
                                             WHERE 
