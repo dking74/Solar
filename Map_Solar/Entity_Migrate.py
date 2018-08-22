@@ -645,8 +645,7 @@ class IntelligridMig  ( ):
                                                 Orion.ResponseTime r
                                             WHERE 
                                                 r.Node.Caption='{}' AND
-                                                r.DateTime >= AddDate ( 'day' , -30 , getdate ( ) ) AND
-                                                r.Availability < 100.0
+                                                r.DateTime >= AddDate ( 'day' , -30 , getdate ( ) )
                                             ORDER BY
                                                 r.DateTime
                                             """.format ( name )
