@@ -655,7 +655,7 @@ class IntelligridMig  ( ):
         counter = 0.0000
 
         for res in result [ 'results' ]:
-            total += float ( res [ 'Available' ] )
+            total += format ( float ( res [ 'Available' ] ) , '.4f' )
             counter += 1.0000
 
             print ( res )
