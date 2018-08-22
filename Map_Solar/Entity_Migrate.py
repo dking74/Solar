@@ -602,11 +602,11 @@ class IntelligridMig  ( ):
 
         results = self._solarwinds.query    (   """
                                                 SELECT
-                                                    Name,
-                                                    Version,
-                                                    IsActive
+                                                    Message,
+                                                    MessageType,
+                                                    DateTime
                                                 FROM 
-                                                    Orion.Module
+                                                    Orion.SysLog
                                                 """
                                             )
 
