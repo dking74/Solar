@@ -602,18 +602,12 @@ class IntelligridMig  ( ):
 
         results = self._solarwinds.query    (   """
                                                 SELECT
-                                                    c.MAC,
-                                                    x.Caption,
-                                                    c.DateTime
+                                                    Name,
+                                                    Version,
+                                                    IsActive
                                                 FROM 
-                                                    Orion.Nodes x
-                                                INNER JOIN
-                                                    Orion.NodeMACAddresses c
-                                                ON
-                                                    x.NodeID=c.NodeID
-                                                WHERE
-                                                    x.Caption='{}'
-                                                """.format ( name )
+                                                    Orion.Module
+                                                """
                                             )
 
         for result in results [ 'results' ]:
