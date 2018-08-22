@@ -651,18 +651,9 @@ class IntelligridMig  ( ):
                                             """.format ( name )
                                         )
 
-        total   = 0.0000
-        counter = 0.0000
-
         for res in result [ 'results' ]:
-            total += format ( float ( res [ 'Available' ] ) , '.4f' )
-            counter += 1.0000
-
             print ( res )
             file_test.write ( str( res ) )
-
-        average = total / counter
-        print ( format ( average , '.4f') )
 
         file_test.close ( )
 
