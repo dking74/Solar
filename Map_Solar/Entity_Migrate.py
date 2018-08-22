@@ -617,7 +617,8 @@ class IntelligridMig  ( ):
                                                 """.format ( name )
                                             )
 
-        print ( results )
+    for result in results [ 'results' ]:
+            print ( result )
 # class SolarProperties ( ABC ):
 
 #     @abstractmethod
