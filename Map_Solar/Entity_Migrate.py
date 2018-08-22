@@ -633,11 +633,13 @@ class IntelligridMig  ( ):
         result = self._solarwinds.query (   """
                                             SELECT
                                                 r.DateTime,
-                                                r.Availability
+                                                r.Availability,
+                                                GetDate () as Date
                                             FROM
                                                 Orion.ResponseTime r
                                             WHERE 
-                                                r.Node.Caption='{}'
+                                                r.Node.Caption='{}' AND
+                                                DayDiff ( r.DateTime , GetDate () ) < 8
                                             ORDER BY
                                                 r.DateTime
                                             """.format ( name )
