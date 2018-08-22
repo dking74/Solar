@@ -110,9 +110,9 @@ class IntelligridMig  ( ):
         '''
 
         # setup the base level groups and read the file
-        self._setupBaseGroups         (      "Test"     )
-        self.__load_worksheet         ( self._inputFile )
-        groupList = self.getGroupList (      "Test"     )
+        self._setupBaseGroups            (      "Test"     )
+        self.__load_worksheet            ( self._inputFile )
+        existingList = self.getGroupList (      "Test"     )
 
         # create list for holding all created entities and iterate through workbook
         createdList = []
@@ -145,7 +145,7 @@ class IntelligridMig  ( ):
                 group_created, group_id = self.createGroup ( loc_name , loc_name , node_list )
                 
                 # update properties of group, whether just created or already created
-                properties = self.defGroupProp (           division, owning_co, asset_type, latitude, longitude, 
+                properties = self.addGroupProp (           division, owning_co, asset_type, latitude, longitude, 
                                                                address, loc_id, emprv_dist, prim_dist                  )
                 self.updateGroupProps          (                        group_id , **properties                        )
                 self.createMapPoint            (                    group_id , latitude , longitude                    )
@@ -155,6 +155,7 @@ class IntelligridMig  ( ):
                 # 2. add group to base group
                 if group_created != None:
                     createdList.append  (                             group_created                             )
+
                     self.addDefinitions ( self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] , group_created )
             else:
                 print ( "There were no nodes matching: {} or {}".format ( legacy_loc , site_id ) )
@@ -212,22 +213,30 @@ class IntelligridMig  ( ):
         if len ( *args ) == 1:
 
             # update the container
-            self._solarwinds.invoke ( 
-                "Orion.Container",
-                'AddDefinition',
-                id_num,
-                *args[0]
-            )
+            try:
+                self._solarwinds.invoke ( 
+                    "Orion.Container",
+                    'AddDefinition',
+                    id_num,
+                    *args[0]
+                )
+
+            except Exception as detail:
+                print ( detail + " \nUnable to add container: {}".format ( id_num) )
 
         else:
 
             # update the container
-            self._solarwinds.invoke ( 
-                "Orion.Container",
-                'AddDefinitions',
-                id_num,
-                *args
-            )
+            try:
+                self._solarwinds.invoke ( 
+                    "Orion.Container",
+                    'AddDefinitions',
+                    id_num,
+                    *args
+                )
+            
+            except Exception as detail:
+                print ( detail + " \nUnable to add container: {}".format ( id_num) )
 
     def addGroupProp     ( self , division=None, owning_co=None, asset_type=None, latitude=None, longitude=None,
                              address=None, loc_id=None , emprv_dist=None , prim_dist=None ):
@@ -307,7 +316,11 @@ class IntelligridMig  ( ):
         uri = result_uri [ 'results' ][ 0 ][ 'Uri' ]
 
         # update the entity with inputted properties
-        self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+        try:
+            self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+
+        except Exception as detail:
+            print ( detail + " \nUnable to update custom properties for id: {}".format ( entity_id ) )
 
     def createMapPoint   ( self, group_id , latitude , longitude ):
 
@@ -331,14 +344,18 @@ class IntelligridMig  ( ):
 
         # create the properties
         properties = {
-             'Instance': 'Orion.Groups',
+             'Instance'  : 'Orion.Groups',
              'InstanceID': group_id,
-             'Latitude': latitude,
-             'Longitude': longitude
+             'Latitude'  : latitude,
+             'Longitude' : longitude
         }
 
         # create the map point based on properties
-        info = self._solarwinds.create ( 'Orion.WorldMap.Point', **properties )
+        try:
+            info = self._solarwinds.create ( 'Orion.WorldMap.Point', **properties )
+
+        except Exception as detail:
+            print ( detail + " \nUnable to create map point for id: {}".format ( group_id ) )
 
     def createCustProps  ( self , entity_type , **properties ):
 
@@ -485,12 +502,19 @@ class IntelligridMig  ( ):
             return False
 
         else:
-            deleted_item = self._solarwinds.invoke  ( 
-                                                        "Orion.Container",
-                                                        "DeleteContainer",
-                                                        container [ 'results' ][ 0 ][ 'ContainerID' ]
-                                                    )
-            return True
+
+            # delete the item
+            try:
+                deleted_item = self._solarwinds.invoke  ( 
+                                        "Orion.Container",
+                                        "DeleteContainer",
+                                        container [ 'results' ][ 0 ][ 'ContainerID' ]
+                                    )
+
+            except Exception as detail:
+                print ( detail + " \nUnable to delete container: {}".format ( name ) )
+            
+            else: return True
 
     def getGroupInfo     ( self , name ):
 
@@ -515,8 +539,10 @@ class IntelligridMig  ( ):
                                                     FROM
                                                         Orion.Container
                                                     WHERE
-                                                        Name='{}'
-                                                    """.format ( name )
+                                                        Name
+                                                    LIKE
+                                                        '{}%'
+                                                    """.format ( name.lower ( ) )
                                                 )
 
         except requests.exceptions.HTTPError:
@@ -598,18 +624,8 @@ class IntelligridMig  ( ):
 
         return name , filter_app
 
-    def queryGroupInfo ( self , name ):
+#    def queryGroupInfo ( self , name ):
 
-        results = self._solarwinds.query    (   """
-                                                SELECT
-                                                    NodeID
-                                                FROM 
-                                                    Orion.ResponseTime
-                                                """
-                                            )
-
-        for result in results [ 'results' ]:
-           print ( result )
 
 # class SolarProperties ( ABC ):
 
