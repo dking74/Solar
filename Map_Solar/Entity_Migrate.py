@@ -649,7 +649,7 @@ class IntelligridMig  ( ):
 
         for res in result [ 'results' ]:
             print ( res )
-            file_test.write ( res )
+            file_test.write ( str( res ) )
 
 
         print ( file_test )
