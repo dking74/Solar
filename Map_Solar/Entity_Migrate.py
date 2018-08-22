@@ -606,7 +606,6 @@ class IntelligridMig  ( ):
                                                     DisplayName,
                                                     Availability,
                                                     AvgResponseTime,
-                                                    Availability,
                                                     DateTime
                                                 FROM 
                                                     Orion.ResponseTime
