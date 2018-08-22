@@ -633,7 +633,7 @@ class IntelligridMig  ( ):
         result = self._solarwinds.query (   """
                                             SELECT
                                                 r.DateTime,
-                                                r.Availabaility
+                                                r.Availability
                                             FROM
                                                 Orion.ResponseTime r
                                             WHERE 
