@@ -607,12 +607,14 @@ class IntelligridMig  ( ):
                                                     c.Description,
                                                     c.Uri
                                                 FROM 
-                                                    Orion.NodeMACAddresses c
-                                                INNER JOIN
                                                     Orion.Nodes x
+                                                INNER JOIN
+                                                    Orion.NodeMACAddresses c
                                                 ON
-                                                    c.NodeID=x.NodeID
-                                                """
+                                                    x.NodeID=c.NodeID
+                                                WHERE
+                                                    x.Caption='{}'
+                                                """.format ( name )
                                             )
 
         print ( results )
