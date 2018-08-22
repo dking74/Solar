@@ -651,11 +651,11 @@ class IntelligridMig  ( ):
                                             """.format ( name )
                                         )
 
-        total = 0
+        total   = 0.0
         counter = 0
 
         for res in result [ 'results' ]:
-            total += res [ 'Available' ]
+            total += float ( res [ 'Available' ] )
             counter += 1
 
             print ( res )
