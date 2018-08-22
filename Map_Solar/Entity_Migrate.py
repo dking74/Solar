@@ -662,7 +662,7 @@ class IntelligridMig  ( ):
             file_test.write ( str( res ) )
 
         average = total / counter
-        print ( average )
+        print ( format ( average , '.4f') )
 
         file_test.close ( )
 
