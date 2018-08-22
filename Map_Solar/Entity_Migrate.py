@@ -645,7 +645,7 @@ class IntelligridMig  ( ):
                                             FROM
                                                 Orion.ResponseTime r
                                             WHERE 
-                                                r.Availability < 100.0 AND r.Availability > 90.0 AND
+                                                r.Availability < 100.0 AND
                                                 r.DateTime >= AddDate ( 'day' , -7 , getdate ( ) )
                                             ORDER BY
                                                 r.DateTime
