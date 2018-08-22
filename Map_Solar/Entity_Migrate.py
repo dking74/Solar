@@ -651,6 +651,8 @@ class IntelligridMig  ( ):
             print ( res )
             file_test.write ( res )
 
+
+        print ( file_test )
         file_test.close ( )
 
 # class SolarProperties ( ABC ):
