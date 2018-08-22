@@ -634,11 +634,12 @@ class IntelligridMig  ( ):
         file_test = open ( "test.txt" , "w" )
         result = self._solarwinds.query (   """
                                             SELECT
-                                                DateTrunc ( 'year'   , r.DateTime ) as Year,
-                                                DateTrunc ( 'month'  , r.DateTime ) as Month,
-                                                DateTrunc ( 'day'    , r.DateTime ) as Day,
-                                                DateTrunc ( 'hour'   , r.DateTime ) as Hour,
-                                                DateTrunc ( 'minute' , r.DateTime ) as Minute,
+                                                Year   ( r.DateTime ) as Year,
+                                                Month  ( r.DateTime ) as Month,
+                                                Day    ( r.DateTime ) as Day,
+                                                Hour   ( r.DateTime ) as Hour,
+                                                Minute ( r.DateTime ) as Minute,
+                                                Second ( r.DateTime ) as Second
                                                 r.Availability
                                             FROM
                                                 Orion.ResponseTime r
