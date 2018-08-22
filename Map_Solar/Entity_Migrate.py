@@ -634,7 +634,7 @@ class IntelligridMig  ( ):
         file_test = open ( "test.txt" , "w" )
         result = self._solarwinds.query (   """
                                             SELECT
-                                                r.DisplayName         as Name,
+                                                r.Node.Caption        as Name,
                                                 Year   ( r.DateTime ) as Year,
                                                 Month  ( r.DateTime ) as Month,
                                                 Day    ( r.DateTime ) as Day,
