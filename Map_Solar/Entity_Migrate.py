@@ -609,9 +609,9 @@ class IntelligridMig  ( ):
                                                     Orion.SysLog
                                                 """
                                             )
-
-        for result in results [ 'results' ]:
-            print ( result )
+        print ( results )
+        #for result in results [ 'results' ]:
+        #    print ( result )
 # class SolarProperties ( ABC ):
 
 #     @abstractmethod
