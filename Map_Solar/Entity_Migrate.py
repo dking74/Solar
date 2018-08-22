@@ -630,11 +630,13 @@ class IntelligridMig  ( ):
 
     def queryGroupInfo ( self , name ):
 
+        file_test = open ( "test.txt" , "w" )
+
         result = self._solarwinds.query (   """
                                             SELECT
+                                                r.Node.Caption,
                                                 r.DateTime,
-                                                r.Availability,
-                                                GetDate () as Date
+                                                r.Availability
                                             FROM
                                                 Orion.ResponseTime r
                                             WHERE 
@@ -647,6 +649,9 @@ class IntelligridMig  ( ):
 
         for res in result [ 'results' ]:
             print ( res )
+            file_test.write ( res )
+
+        file_test.close ( )
 
 # class SolarProperties ( ABC ):
 
