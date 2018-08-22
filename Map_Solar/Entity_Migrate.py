@@ -604,13 +604,7 @@ class IntelligridMig  ( ):
                                                 SELECT
                                                     c.DisplayName
                                                 FROM 
-                                                    Orion.Nodes n
-                                                INNER JOIN
                                                     Orion.NPM.MulticastRouting.GroupNodes c
-                                                ON
-                                                    n.NodeID=c.NodeID
-                                                WHERE
-                                                    n.Caption='{}'
                                                 """.format ( name )
                                             )
 
