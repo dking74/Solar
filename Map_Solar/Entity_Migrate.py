@@ -639,7 +639,7 @@ class IntelligridMig  ( ):
                                                 Day    ( r.DateTime ) as Day,
                                                 Hour   ( r.DateTime ) as Hour,
                                                 Minute ( r.DateTime ) as Minute,
-                                                Second ( r.DateTime ) as Second
+                                                Second ( r.DateTime ) as Second,
                                                 r.Availability
                                             FROM
                                                 Orion.ResponseTime r
