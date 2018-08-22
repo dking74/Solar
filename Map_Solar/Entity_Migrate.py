@@ -603,7 +603,7 @@ class IntelligridMig  ( ):
         results = self._solarwinds.query    (   """
                                                 SELECT
                                                     c.MAC,
-                                                    x.Caption
+                                                    x.Caption,
                                                     c.Description,
                                                     c.Uri
                                                 FROM 
