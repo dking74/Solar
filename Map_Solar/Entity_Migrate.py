@@ -602,15 +602,18 @@ class IntelligridMig  ( ):
 
         results = self._solarwinds.query    (   """
                                                 SELECT
-                                                    Name,
-                                                    Description
+                                                    DisplayName,
+                                                    Description,
+                                                    Position,
+                                                    ResourceID
                                                 FROM 
-                                                    Orion.SwisFeature
+                                                    Orion.Resources
                                                 """
                                             )
-        print ( results )
-        #for result in results [ 'results' ]:
-        #    print ( result )
+
+        for result in results [ 'results' ]:
+           print ( result )
+           
 # class SolarProperties ( ABC ):
 
 #     @abstractmethod
