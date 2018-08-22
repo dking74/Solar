@@ -637,7 +637,7 @@ class IntelligridMig  ( ):
                                                 r.Node.Caption,
                                                 r.DateTime,
                                                 r.Availability,
-                                                getdate() as Date
+                                                HourDiff ( r.DateTime , GetDate () ) < 24*7 as Time
                                             FROM
                                                 Orion.ResponseTime r
                                             WHERE 
