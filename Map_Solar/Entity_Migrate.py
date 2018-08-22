@@ -602,10 +602,13 @@ class IntelligridMig  ( ):
 
         results = self._solarwinds.query    (   """
                                                 SELECT
-                                                    c.DisplayName
+                                                    Address,
+                                                    GroupId,
+                                                    FriendlyName,
+                                                    Uri    
                                                 FROM 
-                                                    Orion.NPM.MulticastRouting.GroupNodes c
-                                                """.format ( name )
+                                                    IPAM.GroupReport
+                                                """
                                             )
 
         print ( results )
