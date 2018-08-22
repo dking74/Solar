@@ -640,7 +640,7 @@ class IntelligridMig  ( ):
                                             """
                                         )
 
-        for res in result:
+        for res in result [ 'results' ]:
             print ( res )
 
 # class SolarProperties ( ABC ):
