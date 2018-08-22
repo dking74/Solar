@@ -641,9 +641,7 @@ class IntelligridMig  ( ):
                                                 Orion.ResponseTime r
                                             WHERE 
                                                 r.Node.Caption='{}' AND
-                                                WeekDiff ( r.DateTime , GetDate () ) = 1
-                                            ORDER BY
-                                                r.DateTime
+                                                HourDiff ( r.DateTime , GetDate () ) < 24*7
                                             """.format ( name )
                                         )
 
@@ -651,8 +649,6 @@ class IntelligridMig  ( ):
             print ( res )
             file_test.write ( str( res ) )
 
-
-        print ( file_test )
         file_test.close ( )
 
 # class SolarProperties ( ABC ):
