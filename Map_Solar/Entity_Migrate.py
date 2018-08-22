@@ -632,12 +632,13 @@ class IntelligridMig  ( ):
 
         result = self._solarwinds.query (   """
                                             SELECT
-                                                ReportID,
-                                                Name,
-                                                Description
+                                                r.DateTime,
+                                                r.Availabaility
                                             FROM
-                                                Orion.Report
-                                            """
+                                                Orion.ResponseTime r
+                                            WHERE 
+                                                r.Node.Caption='{}'
+                                            """.format ( name )
                                         )
 
         for res in result [ 'results' ]:
