@@ -645,16 +645,26 @@ class IntelligridMig  ( ):
                                             FROM
                                                 Orion.ResponseTime r
                                             WHERE 
-                                                r.Availability < 100.0 AND r.Node.Caption='{}' AND
+                                                r.Node.Caption='{}' AND
                                                 r.DateTime >= AddDate ( 'day' , -7 , getdate ( ) )
                                             ORDER BY
                                                 r.DateTime
                                             """.format ( name )
                                         )
 
+        total = 0.0
+        counter = 0
+
         for res in result [ 'results' ]:
+
+            total += res [ 'Available' ]
+            counter += 1
+
             print ( res )
             file_test.write ( str( res ) )
+
+        percent = total / counter
+        print ( format ( percent , '.4f' ) )
 
         file_test.close ( )
 
