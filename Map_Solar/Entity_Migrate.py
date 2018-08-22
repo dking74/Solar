@@ -156,9 +156,13 @@ class IntelligridMig  ( ):
                 if group_created != None:
                     createdList.append  (                             group_created                             )
 
-                    self.addDefinitions ( self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] , group_created )
+                    self.addDefinitions (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
+                                                                        group_created                           )
             else:
                 print ( "There were no nodes matching: {} or {}".format ( legacy_loc , site_id ) )
+
+        # for group in existingList:
+        #     self.deleteGroup ( group )
 
     def detExistingNode  ( self , check_str ):
 
@@ -624,8 +628,20 @@ class IntelligridMig  ( ):
 
         return name , filter_app
 
-#    def queryGroupInfo ( self , name ):
+    def queryGroupInfo ( self , name ):
 
+        result = self._solarwinds.query (   """
+                                            SELECT
+                                                ReportID,
+                                                Name,
+                                                Description
+                                            FROM
+                                                Orion.Report
+                                            """
+                                        )
+
+        for res in result:
+            print ( res )
 
 # class SolarProperties ( ABC ):
 
