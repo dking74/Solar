@@ -605,7 +605,7 @@ class IntelligridMig  ( ):
                                                     c.MAC,
                                                     c.DisplayName
                                                 FROM 
-                                                    Orion.NodeMACAddress c
+                                                    Orion.NodeMACAddresses c
                                                 """
                                             )
 
