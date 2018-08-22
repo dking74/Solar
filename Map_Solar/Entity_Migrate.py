@@ -639,7 +639,6 @@ class IntelligridMig  ( ):
                                                 DateTrunc ( 'day'    , r.DateTime ) as Day,
                                                 DateTrunc ( 'hour'   , r.DateTime ) as Hour,
                                                 DateTrunc ( 'minute' , r.DateTime ) as Minute,
-                                                DateTrunc ( 'second' , r.DateTime ) as Second,
                                                 r.Availability
                                             FROM
                                                 Orion.ResponseTime r
