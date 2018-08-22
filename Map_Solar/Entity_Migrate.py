@@ -651,12 +651,12 @@ class IntelligridMig  ( ):
                                             """.format ( name )
                                         )
 
-        total   = 0.0
-        counter = 0
+        total   = 0.0000
+        counter = 0.0000
 
         for res in result [ 'results' ]:
             total += float ( res [ 'Available' ] )
-            counter += 1
+            counter += 1.0000
 
             print ( res )
             file_test.write ( str( res ) )
