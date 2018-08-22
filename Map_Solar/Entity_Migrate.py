@@ -646,11 +646,13 @@ class IntelligridMig  ( ):
                                                 Orion.ResponseTime r
                                             WHERE 
                                                 r.Node.Caption='{}' AND
-                                                r.DateTime >= AddDate ( 'day' , -7 , getdate ( ) )
+                                                DateDiff ( r.DateTime , GetDate ( ) ) < 8
                                             ORDER BY
                                                 r.DateTime
                                             """.format ( name )
                                         )
+
+        #r.DateTime >= AddDate ( 'day' , -7 , getdate ( ) )
 
         total = 0.0
         counter = 0
