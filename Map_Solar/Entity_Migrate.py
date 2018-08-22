@@ -605,7 +605,10 @@ class IntelligridMig  ( ):
                                                     DisplayName,
                                                     Description,
                                                     Position,
-                                                    ResourceID
+                                                    ResourceID,
+                                                    ResourceName,
+                                                    ResourceFile,
+                                                    ResourceTitle
                                                 FROM 
                                                     Orion.Resources
                                                 """
@@ -613,7 +616,7 @@ class IntelligridMig  ( ):
 
         for result in results [ 'results' ]:
            print ( result )
-           
+
 # class SolarProperties ( ABC ):
 
 #     @abstractmethod
