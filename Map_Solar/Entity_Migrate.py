@@ -638,7 +638,7 @@ class IntelligridMig  ( ):
                                                 Orion.ResponseTime r
                                             WHERE 
                                                 r.Node.Caption='{}'
-                                            GROUPBY
+                                            ORDER BY
                                                 r.DateTime
                                             """.format ( name )
                                         )
