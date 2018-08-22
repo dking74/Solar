@@ -638,6 +638,8 @@ class IntelligridMig  ( ):
                                                 Orion.ResponseTime r
                                             WHERE 
                                                 r.Node.Caption='{}'
+                                            GROUPBY
+                                                r.DateTime
                                             """.format ( name )
                                         )
 
