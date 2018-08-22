@@ -604,8 +604,7 @@ class IntelligridMig  ( ):
                                                 SELECT
                                                     c.MAC,
                                                     x.Caption,
-                                                    c.Description,
-                                                    c.Uri
+                                                    c.DateTime
                                                 FROM 
                                                     Orion.Nodes x
                                                 INNER JOIN
