@@ -642,6 +642,8 @@ class IntelligridMig  ( ):
                                             WHERE 
                                                 r.Node.Caption='{}' AND
                                                 HourDiff ( r.DateTime , GetDate () ) < 24*7
+                                            ORDER BY
+                                                r.DateTime
                                             """.format ( name )
                                         )
 
