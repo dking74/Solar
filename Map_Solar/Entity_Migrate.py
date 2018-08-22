@@ -617,7 +617,7 @@ class IntelligridMig  ( ):
                                                 """.format ( name )
                                             )
 
-    for result in results [ 'results' ]:
+        for result in results [ 'results' ]:
             print ( result )
 # class SolarProperties ( ABC ):
 
