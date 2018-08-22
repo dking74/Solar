@@ -640,7 +640,7 @@ class IntelligridMig  ( ):
                                                 Hour   ( r.DateTime ) as Hour,
                                                 Minute ( r.DateTime ) as Minute,
                                                 Second ( r.DateTime ) as Second,
-                                                r.Availability
+                                                r.Availability as Available
                                             FROM
                                                 Orion.ResponseTime r
                                             WHERE 
@@ -651,9 +651,18 @@ class IntelligridMig  ( ):
                                             """.format ( name )
                                         )
 
+        total = 0
+        counter = 0
+
         for res in result [ 'results' ]:
+            total += res [ 'Available' ]
+            counter += 1
+
             print ( res )
             file_test.write ( str( res ) )
+
+        average = total / counter
+        print ( average )
 
         file_test.close ( )
 
