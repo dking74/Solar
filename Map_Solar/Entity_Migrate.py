@@ -602,11 +602,7 @@ class IntelligridMig  ( ):
 
         results = self._solarwinds.query    (   """
                                                 SELECT
-                                                    NodeID,
-                                                    DisplayName,
-                                                    Availability,
-                                                    AvgResponseTime,
-                                                    DateTime
+                                                    NodeID
                                                 FROM 
                                                     Orion.ResponseTime
                                                 """
