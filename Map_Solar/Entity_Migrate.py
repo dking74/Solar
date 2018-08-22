@@ -602,13 +602,10 @@ class IntelligridMig  ( ):
 
         results = self._solarwinds.query    (   """
                                                 SELECT
-                                                    c.MACAddress
+                                                    c.IPAddress,
+                                                    c.DisplayName
                                                 FROM 
-                                                    Orion.Nodes n
-                                                INNER JOIN
-                                                    Orion.UDT.MACAddressInfo c
-                                                ON
-                                                    n.NodeID=c.NodeID
+                                                    Orion.UDT.IPAddressCurrent c
                                                 """
                                             )
 
