@@ -365,7 +365,7 @@ class IntelligridMig  ( ):
             self._solarwinds.update ( uri + '/CustomProperties' , **properties )
 
         except Exception as detail:
-            print ( detail + " \nUnable to update custom properties for id: {}".format ( entity_id ) )
+            print ( "Unable to update Custom Property for node: %s" % node_name )
 
     def createMapPoint   ( self, group_id , latitude , longitude ):
 
