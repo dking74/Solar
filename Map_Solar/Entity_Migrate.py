@@ -361,7 +361,7 @@ class IntelligridMig  ( ):
             properties = { cust_prop : value }
 
             # pull the uri directly
-            for result in result_uri [ 'results ']:  
+            for result in result_uri [ 'results']:  
                 uri = result [ 'Uri' ]
 
                 # update the entity with inputted properties
