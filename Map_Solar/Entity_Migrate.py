@@ -137,7 +137,7 @@ class IntelligridMig  ( ):
             site_info   = self.detExistingNode (   site_id  )[ 'results' ]
 
             # if there are entities found --> add the nodes to a group while creating group
-            if legacy_info == True or site_info == True:
+            if legacy_info or site_info:
 
                 # create the new group after determining what nodes should be added to group
                 name , filtering        = self.getQueryInfo ( legacy_info , site_info , legacy_loc , site_id )
@@ -326,7 +326,7 @@ class IntelligridMig  ( ):
         except Exception as detail:
             print ( detail + " \nUnable to update custom properties for id: {}".format ( entity_id ) )
 
-    def updateNodeProp   ( self , node_name , cust_prop ):
+    def updateNodeProp   ( self , node_name , cust_prop , value ):
         
         '''
             Method name      : updateNodeCustProp
@@ -336,6 +336,7 @@ class IntelligridMig  ( ):
             Parameters       :
                 - node_name  : The node to update
                 - cust_prop  : The custom property to update
+                - value      : Value to give custom property
         
             Returns          : None
         '''
@@ -355,6 +356,9 @@ class IntelligridMig  ( ):
 
         # pull the uri directly
         uri = result_uri [ 'results' ][ 0 ][ 'Uri' ]
+
+        # create dictionary for property
+        properties = { cust_prop : value }
 
         # update the entity with inputted properties
         try:
@@ -702,30 +706,25 @@ class IntelligridMig  ( ):
 
         return result
 
-    def nodeCustProps    ( self ):
+    def createNodeProps  ( self ):
 
         for ROW in range ( 3 , self._intelligridSheet.max_row + 1 ):
 
             # get the column info from row
             legacy_loc = self._intelligridSheet.cell ( row=ROW , column=1  ).value
             site_id    = self._intelligridSheet.cell ( row=ROW , column=5  ).value
-            loc_name   = self._intelligridSheet.cell ( row=ROW , column=7  ).value
-            division   = self._intelligridSheet.cell ( row=ROW , column=8  ).value
             owning_co  = self._intelligridSheet.cell ( row=ROW , column=9  ).value
-            asset_type = self._intelligridSheet.cell ( row=ROW , column=10 ).value
-            latitude   = self._intelligridSheet.cell ( row=ROW , column=11 ).value
-            longitude  = self._intelligridSheet.cell ( row=ROW , column=12 ).value
-            address    = self._intelligridSheet.cell ( row=ROW , column=13 ).value
-            loc_id     = self._intelligridSheet.cell ( row=ROW , column=14 ).value
-            emprv_dist = self._intelligridSheet.cell ( row=ROW , column=15 ).value
-            prim_dist  = self._intelligridSheet.cell ( row=ROW , column=16 ).value 
 
             # get the information for existing nodes
             legacy_info = self.detExistingNode ( legacy_loc )[ 'results' ]
             site_info   = self.detExistingNode (   site_id  )[ 'results' ]
 
             # if there are entities found --> add the nodes to a group while creating group
-            if legacy_info == True or site_info == True:
+            if legacy_info:
+                self.updateNodeProp ( legacy_loc.lower ( ) , 'Owning_Company' , str ( owning_co ) )
+
+            if site_info:
+                self.updateNodeProp ( site_id.lower    ( ) , 'Owning_Company' , str ( owning_co ) )                
 
 
 # class SolarProperties ( ABC ):
