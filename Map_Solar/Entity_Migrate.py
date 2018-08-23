@@ -750,7 +750,7 @@ class IntelligridMig  ( ):
                                                 SELECT
                                                     c.Container.DisplayName as Name,
                                                     c.ContainerID           as ID,
-                                                    c.Name
+                                                    c.Name                  as name
                                                 FROM
                                                     Orion.ContainerMembers c
                                                 WHERE
