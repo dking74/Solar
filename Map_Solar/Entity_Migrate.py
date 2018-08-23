@@ -750,7 +750,7 @@ class IntelligridMig  ( ):
                                                 SELECT
                                                     c.Container.DisplayName as Name,
                                                     c.ContainerID           as ID,
-                                                    c.Name                  as Display
+                                                    c.Name                  as Member
                                                 FROM
                                                     Orion.ContainerMembers c
                                                 WHERE
@@ -758,10 +758,8 @@ class IntelligridMig  ( ):
                                                 """.format ( node_name )
                                              )
 
-        print (   node_group   )
-
         for group_holder in node_group [ 'results' ]:
-            print ( group_holder [ 'Name' ] )
+            print ( group_holder [ 'Member' ] , group_holder [ 'Name' ] )
             #if group_holder [ 'Name '] in existingGroups:
             #    print ( "The group already exists" )
 
