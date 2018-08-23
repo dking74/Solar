@@ -648,8 +648,8 @@ class IntelligridMig  ( ):
 
         # create the list based on query info
         groupList = []
-        for group_info in group_query [ 'results' ]:
-           groupList.append ( group_info [ 'Name' ]  )
+        if len ( group_query [ 'results' ] ) > 0:
+            groupList = [ item [ 'Name' ] for item in group_query [ 'results' ] ]
            
         return groupList
 
@@ -744,21 +744,28 @@ class IntelligridMig  ( ):
             if site_info:
                 self.updateNodeProp ( site_id.lower    ( ) , 'Owning_Company' , str ( owning_co ) )
 
-    def findNodeContain  ( self , node_name ):
+    def findNodeContain  ( self , node_name , *existingGroups ):
 
-        res = self._solarwinds.query (  """"
-                                        SELECT
-                                            c.Container.Name as Name,
-                                            c.ContainerID    as ID
-                                        FROM
-                                            Orion.ContainerMembers c
-                                        WHERE
-                                            c.Name
-                                        LIKE
-                                            '{}%'
-                                        """.format ( node_name )
-                                    )
-        print ( res )     
+        node_group  = self._solarwinds.query (  """"
+                                                SELECT
+                                                    c.Container.DisplayName as Name,
+                                                    c.ContainerID           as ID
+                                                FROM
+                                                    Orion.ContainerMembers c
+                                                WHERE
+                                                    c.Name LIKE '{}%'
+                                                """.format ( node_name )
+                                             )
+
+        print (   node_group   )
+
+        for group_holder in node_group [ 'results' ]:
+            if group_holder [ 'Name '] in existingGroups:
+                print ( "The group already exists" )
+
+
+
+
 
 # class SolarProperties ( ABC ):
 
