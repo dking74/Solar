@@ -749,7 +749,8 @@ class IntelligridMig  ( ):
         node_group  = self._solarwinds.query (  """"
                                                 SELECT
                                                     c.Container.DisplayName as Name,
-                                                    c.ContainerID           as ID
+                                                    c.ContainerID           as ID,
+                                                    c.Name
                                                 FROM
                                                     Orion.ContainerMembers c
                                                 WHERE
@@ -760,7 +761,7 @@ class IntelligridMig  ( ):
         print (   node_group   )
 
         for group_holder in node_group [ 'results' ]:
-            print ( group_holder )
+            print ( group_holder [ 'Name' ] )
             #if group_holder [ 'Name '] in existingGroups:
             #    print ( "The group already exists" )
 
