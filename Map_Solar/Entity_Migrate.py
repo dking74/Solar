@@ -133,8 +133,8 @@ class IntelligridMig  ( ):
             prim_dist  = self._intelligridSheet.cell ( row=ROW , column=16 ).value 
 
             # get the information for existing nodes
-            legacy_info = self.detExistingNode ( legacy_loc )[ 'results' ]
-            site_info   = self.detExistingNode (   site_id  )[ 'results' ]
+            legacy_info = self.detExistingNode ( legacy_loc )
+            site_info   = self.detExistingNode (   site_id  )
 
             # if there are entities found --> add the nodes to a group while creating group
             if legacy_info or site_info:
@@ -341,31 +341,34 @@ class IntelligridMig  ( ):
             Returns          : None
         '''
 
-        # get the Uri of the entity
-        result_uri = self._solarwinds.query (   """
-                                                SELECT
-                                                    Uri
-                                                FROM
-                                                    Orion.Nodes
-                                                WHERE
-                                                    Caption
-                                                LIKE 
-                                                    '{}%'
-                                                """.format ( node_name )
-                                            )
+        # make sure value is not empty
+        if value != "":
 
-        # pull the uri directly
-        uri = result_uri [ 'results' ][ 0 ][ 'Uri' ]
+            # get the Uri of the entity
+            result_uri = self._solarwinds.query (   """
+                                                    SELECT
+                                                        Uri
+                                                    FROM
+                                                        Orion.Nodes
+                                                    WHERE
+                                                        Caption
+                                                    LIKE 
+                                                        '{}%'
+                                                    """.format ( node_name )
+                                                )
 
-        # create dictionary for property
-        properties = { cust_prop : value }
+            # pull the uri directly
+            uri = result_uri [ 'results' ][ 0 ][ 'Uri' ]
 
-        # update the entity with inputted properties
-        try:
-            self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+            # create dictionary for property
+            properties = { cust_prop : value }
 
-        except Exception as detail:
-            print ( "Unable to update Custom Property for node: %s" % node_name )
+            # update the entity with inputted properties
+            try:
+                self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+
+            except Exception:
+                print ( "Unable to update Custom Property for node: %s" % node_name )
 
     def createMapPoint   ( self, group_id , latitude , longitude ):
 
@@ -718,8 +721,8 @@ class IntelligridMig  ( ):
             owning_co  = self._intelligridSheet.cell ( row=ROW , column=9  ).value
 
             # get the information for existing nodes
-            legacy_info = self.detExistingNode ( legacy_loc )[ 'results' ]
-            site_info   = self.detExistingNode (   site_id  )[ 'results' ]
+            legacy_info = self.detExistingNode ( legacy_loc )
+            site_info   = self.detExistingNode (   site_id  )
 
             # if there are entities found --> add the nodes to a group while creating group
             if legacy_info:
