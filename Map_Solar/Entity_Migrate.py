@@ -759,6 +759,7 @@ class IntelligridMig  ( ):
                                              )
 
         print ( existingGroups )
+        print ( "\n\n")
         print ( *existingGroups )
         for group_holder in node_group [ 'results' ]:
             #print ( group_holder [ 'Member' ] , group_holder [ 'Name' ] )
