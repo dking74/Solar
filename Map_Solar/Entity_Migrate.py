@@ -744,7 +744,7 @@ class IntelligridMig  ( ):
             if site_info:
                 self.updateNodeProp ( site_id.lower    ( ) , 'Owning_Company' , str ( owning_co ) )
 
-    def findNodeContain  ( self , node_name , *existingGroups ):
+    def findNodeContain  ( self , node_name , existingGroups ):
 
         node_group  = self._solarwinds.query (  """"
                                                 SELECT
@@ -758,9 +758,6 @@ class IntelligridMig  ( ):
                                                 """.format ( node_name )
                                              )
 
-        print ( existingGroups )
-        print ( "\n\n")
-        print ( *existingGroups )
         for group_holder in node_group [ 'results' ]:
             #print ( group_holder [ 'Member' ] , group_holder [ 'Name' ] )
             if group_holder [ 'Name' ] in existingGroups:
