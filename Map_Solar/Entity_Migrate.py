@@ -627,7 +627,7 @@ class IntelligridMig  ( ):
             Method Purpose      : To get the names of all the groups
         
             Parameters          :
-                - topLevelGroup :
+                - topLevelGroup : The group that contains what you are looking for
         
             Returns             : The list of groups
         '''
