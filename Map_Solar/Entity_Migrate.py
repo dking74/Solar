@@ -749,7 +749,7 @@ class IntelligridMig  ( ):
         res = self._solarwinds.query (  """"
                                         SELECT
                                             c.Container.Name as Name,
-                                            c.ContainerID    as ID  ,
+                                            c.ContainerID    as ID
                                         FROM
                                             Orion.ContainerMembers c
                                         WHERE
