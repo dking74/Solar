@@ -326,6 +326,43 @@ class IntelligridMig  ( ):
         except Exception as detail:
             print ( detail + " \nUnable to update custom properties for id: {}".format ( entity_id ) )
 
+    def updateNodeProp   ( self , node_name , cust_prop ):
+        
+        '''
+            Method name      : updateNodeCustProp
+        
+            Method Purpose   : To add property to a node
+        
+            Parameters       :
+                - node_name  : The node to update
+                - cust_prop  : The custom property to update
+        
+            Returns          : None
+        '''
+
+        # get the Uri of the entity
+        result_uri = self._solarwinds.query (   """
+                                                SELECT
+                                                    Uri
+                                                FROM
+                                                    Orion.Nodes
+                                                WHERE
+                                                    Caption
+                                                LIKE 
+                                                    '{}%'
+                                                """.format ( node_name )
+                                            )
+
+        # pull the uri directly
+        uri = result_uri [ 'results' ][ 0 ][ 'Uri' ]
+
+        # update the entity with inputted properties
+        try:
+            self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+
+        except Exception as detail:
+            print ( detail + " \nUnable to update custom properties for id: {}".format ( entity_id ) )
+
     def createMapPoint   ( self, group_id , latitude , longitude ):
 
         '''
@@ -401,20 +438,23 @@ class IntelligridMig  ( ):
                     type_prop = 'string'
                     size      = 100
 
-                self._solarwinds.invoke (   
-                                            entity_type,
-                                            'CreateCustomProperty',
-                                            prop,
-                                            descr,
-                                            type_prop,
-                                            size,
-                                            None,
-                                            None,
-                                            None,
-                                            None,
-                                            None,
-                                            None
-                                        )
+                try:
+                    self._solarwinds.invoke (   
+                                                entity_type,
+                                                'CreateCustomProperty',
+                                                prop,
+                                                descr,
+                                                type_prop,
+                                                size,
+                                                None,
+                                                None,
+                                                None,
+                                                None,
+                                                None,
+                                                None
+                                            )
+                except Exception:
+                    print ( "Unable to create custom property." )
 
             else:
                 print ( "Custom property already exists for: {}".format ( prop ) )
@@ -662,42 +702,30 @@ class IntelligridMig  ( ):
 
         return result
 
-    def updateNodeProp   ( self , node_name , cust_prop ):
-        
-        '''
-            Method name      : updateNodeCustProp
-        
-            Method Purpose   : To add property to a node
-        
-            Parameters       :
-                - node_name  : The node to update
-                - cust_prop  : The
-        
-            Returns          : None
-        '''
+    def nodeCustProps    ( self ):
 
-        # get the Uri of the entity
-        result_uri = self._solarwinds.query (   """
-                                                SELECT
-                                                    Uri
-                                                FROM
-                                                    Orion.Nodes
-                                                WHERE
-                                                    Caption
-                                                LIKE 
-                                                    '{}%'
-                                                """.format ( node_name )
-                                            )
+        for ROW in range ( 3 , self._intelligridSheet.max_row + 1 ):
 
-        # pull the uri directly
-        uri = result_uri [ 'results' ][ 0 ][ 'Uri' ]
+            # get the column info from row
+            legacy_loc = self._intelligridSheet.cell ( row=ROW , column=1  ).value
+            site_id    = self._intelligridSheet.cell ( row=ROW , column=5  ).value
+            loc_name   = self._intelligridSheet.cell ( row=ROW , column=7  ).value
+            division   = self._intelligridSheet.cell ( row=ROW , column=8  ).value
+            owning_co  = self._intelligridSheet.cell ( row=ROW , column=9  ).value
+            asset_type = self._intelligridSheet.cell ( row=ROW , column=10 ).value
+            latitude   = self._intelligridSheet.cell ( row=ROW , column=11 ).value
+            longitude  = self._intelligridSheet.cell ( row=ROW , column=12 ).value
+            address    = self._intelligridSheet.cell ( row=ROW , column=13 ).value
+            loc_id     = self._intelligridSheet.cell ( row=ROW , column=14 ).value
+            emprv_dist = self._intelligridSheet.cell ( row=ROW , column=15 ).value
+            prim_dist  = self._intelligridSheet.cell ( row=ROW , column=16 ).value 
 
-        # update the entity with inputted properties
-        try:
-            self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+            # get the information for existing nodes
+            legacy_info = self.detExistingNode ( legacy_loc )[ 'results' ]
+            site_info   = self.detExistingNode (   site_id  )[ 'results' ]
 
-        except Exception as detail:
-            print ( detail + " \nUnable to update custom properties for id: {}".format ( entity_id ) )
+            # if there are entities found --> add the nodes to a group while creating group
+            if legacy_info == True or site_info == True:
 
 
 # class SolarProperties ( ABC ):
