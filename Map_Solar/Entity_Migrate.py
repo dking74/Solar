@@ -628,7 +628,7 @@ class IntelligridMig  ( ):
 
         return name , filter_app
 
-    def queryGroupInfo ( self , name ):
+    def queryGroupInfo   ( self , name ):
 
         # test function for querying data
         file_test = open ( "test.txt" , "w" )
@@ -651,6 +651,7 @@ class IntelligridMig  ( ):
                                                 r.DateTime
                                             """.format ( name )
                                         )
+                                        
 
         #r.DateTime >= AddDate ( 'day' , -7 , getdate ( ) )
 
@@ -660,6 +661,44 @@ class IntelligridMig  ( ):
         file_test.close ( )
 
         return result
+
+    def updateNodeProp   ( self , node_name , cust_prop ):
+        
+        '''
+            Method name      : updateNodeCustProp
+        
+            Method Purpose   : To add property to a node
+        
+            Parameters       :
+                - node_name  : The node to update
+                - cust_prop  : The
+        
+            Returns          : None
+        '''
+
+        # get the Uri of the entity
+        result_uri = self._solarwinds.query (   """
+                                                SELECT
+                                                    Uri
+                                                FROM
+                                                    Orion.Nodes
+                                                WHERE
+                                                    Caption
+                                                LIKE 
+                                                    '{}%'
+                                                """.format ( node_name )
+                                            )
+
+        # pull the uri directly
+        uri = result_uri [ 'results' ][ 0 ][ 'Uri' ]
+
+        # update the entity with inputted properties
+        try:
+            self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+
+        except Exception as detail:
+            print ( detail + " \nUnable to update custom properties for id: {}".format ( entity_id ) )
+
 
 # class SolarProperties ( ABC ):
 
