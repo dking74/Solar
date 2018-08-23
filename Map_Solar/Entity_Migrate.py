@@ -722,9 +722,12 @@ class IntelligridMig  ( ):
             # if there are entities found --> add the nodes to a group while creating group
             if legacy_info:
                 self.updateNodeProp ( legacy_loc.lower ( ) , 'Owning_Company' , str ( owning_co ) )
+                print ( "Node property updated for: %s" % legacy_loc )
 
             if site_info:
-                self.updateNodeProp ( site_id.lower    ( ) , 'Owning_Company' , str ( owning_co ) )                
+                self.updateNodeProp ( site_id.lower    ( ) , 'Owning_Company' , str ( owning_co ) )
+                print ( "Node property updated for: %s" % site_id )
+                
 
 
 # class SolarProperties ( ABC ):
