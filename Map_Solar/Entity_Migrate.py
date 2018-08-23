@@ -132,7 +132,7 @@ class IntelligridMig  ( ):
             emprv_dist = self._intelligridSheet.cell ( row=ROW , column=15 ).value
             prim_dist  = self._intelligridSheet.cell ( row=ROW , column=16 ).value 
 
-            # get the information for existing nodes
+            # determine if nodes exist
             legacy_info = self.detExistingNode ( legacy_loc )
             site_info   = self.detExistingNode (   site_id  )
 
@@ -144,20 +144,30 @@ class IntelligridMig  ( ):
                 node_list               = [ { 'Name' : name, 'Definition' : filtering } ]
                 group_created, group_id = self.createGroup ( loc_name , loc_name , node_list )
                 
-                # update properties of group, whether just created or already created
-                properties = self.addGroupProp (           division, owning_co, asset_type, latitude, longitude, 
-                                                               address, loc_id, emprv_dist, prim_dist                  )
-                self.updateGroupProps          (                        group_id , **properties                        )
-                self.createMapPoint            (                    group_id , latitude , longitude                    )
-                
-                # if there is a group created --> 
-                # 1. add to created list
-                # 2. add group to base group
-                if group_created != None:
-                    createdList.append  (                             group_created                             )
+                if group_created in existingList:
+                    existingList.remove ( group_created )
+                else:
+                    createdList.append ( group_created )
+                    group_info = self.getGroupInfo ( group_created )
 
-                    self.addDefinitions (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
-                                                                        group_created                           )
+
+                # if there is a group created, or existent --> 
+                # 1. update custom properties
+                # 2. update map point
+                # 3. add group to base group
+                if group_created != None:
+                    properties = self.addGroupProp (           division, owning_co, asset_type, latitude, longitude, 
+                                                               address, loc_id, emprv_dist, prim_dist                      )
+                    self.updateGroupProps          (                        group_id , **properties                        )
+                    self.createMapPoint            (                    group_id , latitude , longitude                    )
+                    self.addDefinitions            (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
+                                                                                   group_created                           )
+                    
+
+
+                # update properties of group, whether just created or already created
+                
+            
             else:
                 print ( "There were no nodes matching: {} or {}".format ( legacy_loc , site_id ) )
 
@@ -478,6 +488,7 @@ class IntelligridMig  ( ):
             Parameters         :
                 - group_name   : The name given to the group
                 - description  : The description of the group
+                - *nodes       : The ndoes to add
         
             Returns            :
                 - group_info   : The group created in a list
@@ -524,12 +535,12 @@ class IntelligridMig  ( ):
         else:
             print ( "Group {} already exists".format ( group_name.upper ( ) ) )
 
-             # add the previous group info into list and return
             group_info = []
             group_info.append (
                 { "Name"      : container [ 'results' ][ 0 ][ 'Name' ], \
                   "Definition": container [ 'results' ][ 0 ][ 'Uri'  ]  }
             )
+
             return group_info, container [ 'results' ][ 0 ][ 'ContainerID' ]
 
     def deleteGroup      ( self , name ):
@@ -586,13 +597,13 @@ class IntelligridMig  ( ):
         try:
             entity_uri = self._solarwinds.query (   """
                                                     SELECT
-                                                        Name,
-                                                        ContainerID,
-                                                        Uri
+                                                        c.Name,
+                                                        c.ContainerID,
+                                                        c.Uri
                                                     FROM
-                                                        Orion.Container
+                                                        Orion.Container c
                                                     WHERE
-                                                        Name
+                                                        c.Name
                                                     LIKE
                                                         '{}%'
                                                     """.format ( name.lower ( ) )
@@ -732,7 +743,22 @@ class IntelligridMig  ( ):
 
             if site_info:
                 self.updateNodeProp ( site_id.lower    ( ) , 'Owning_Company' , str ( owning_co ) )
-                
+
+    def findNodeContain  ( self , node_name ):
+
+        res = self._solarwinds.query (  """"
+                                        SELECT
+                                            c.Container.Name as Name,
+                                            c.ContainerID    as ID  ,
+                                        FROM
+                                            Orion.ContainerMembers c
+                                        WHERE
+                                            c.Name
+                                        LIKE
+                                            '{}%'
+                                        """.format ( node_name )
+                                    )
+        print ( res )     
 
 # class SolarProperties ( ABC ):
 
