@@ -357,18 +357,20 @@ class IntelligridMig  ( ):
                                                     """.format ( node_name )
                                                 )
 
-            # pull the uri directly
-            uri = result_uri [ 'results' ][ 0 ][ 'Uri' ]
-
-            # create dictionary for property
+             # create dictionary for property
             properties = { cust_prop : value }
 
-            # update the entity with inputted properties
-            try:
-                self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+            # pull the uri directly
+            for result in result_uri [ 'results ']:  
+                uri = result [ 'Uri' ]
 
-            except Exception:
-                print ( "Unable to update Custom Property for node: %s" % node_name )
+                # update the entity with inputted properties
+                try:
+                    self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+                    print                   ( "Updated Custom Property for node: %s" % node_name )
+
+                except Exception:
+                    print ( "Unable to update Custom Property for node: %s" % node_name )
 
     def createMapPoint   ( self, group_id , latitude , longitude ):
 
@@ -727,13 +729,10 @@ class IntelligridMig  ( ):
             # if there are entities found --> add the nodes to a group while creating group
             if legacy_info:
                 self.updateNodeProp ( legacy_loc.lower ( ) , 'Owning_Company' , str ( owning_co ) )
-                print ( "Node property updated for: %s" % legacy_loc )
 
             if site_info:
                 self.updateNodeProp ( site_id.lower    ( ) , 'Owning_Company' , str ( owning_co ) )
-                print ( "Node property updated for: %s" % site_id )
                 
-
 
 # class SolarProperties ( ABC ):
 
