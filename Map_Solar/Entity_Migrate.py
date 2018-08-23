@@ -758,8 +758,12 @@ class IntelligridMig  ( ):
                                                 """.format ( node_name )
                                              )
 
+        counter = 0
         for group_holder in node_group [ 'results' ]:
             #print ( group_holder [ 'Member' ] , group_holder [ 'Name' ] )
+            print ( group_holder [ 'Name' ] )
+            print ( existingGroups [ counter ] )
+            counter += 1
             if group_holder [ 'Name' ] in existingGroups:
                 print ( "The group already exists" )
 
