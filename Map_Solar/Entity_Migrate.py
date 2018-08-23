@@ -708,6 +708,8 @@ class IntelligridMig  ( ):
 
     def createNodeProps  ( self ):
 
+        self.__load_worksheet            ( self._inputFile )
+
         for ROW in range ( 3 , self._intelligridSheet.max_row + 1 ):
 
             # get the column info from row
