@@ -152,7 +152,7 @@ class IntelligridMig  ( ):
                     existingList.remove ( sgroup )
                     self.deleteGroup    ( sgroup )
 
-                if !legG_exists and !sitG_exists:
+                #if !legG_exists and !sitG_exists:
 
 
             # if no node exists by the name
