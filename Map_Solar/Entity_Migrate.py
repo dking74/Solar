@@ -429,13 +429,14 @@ class IntelligridMig  ( ):
                                             
                 )
 
+        print ( definition )
         print ( **definition )
 
         newDef = self._solarwinds.invoke (
                     'Orion.Container',
                     'UpdateDefinition',
                     currentDef [ 'results' ][ 0 ][ 'DefinitionID' ],
-                    **definition
+                    definition
 
                 )
 
