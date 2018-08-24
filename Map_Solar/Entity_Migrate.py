@@ -180,8 +180,6 @@ class IntelligridMig  ( ):
                     self.createMapPoint            (                    group_id , latitude , longitude                    )
                     self.addDefinitions            (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
                                                                                  group_created                             )
-            #testing
-
         # for group in existingList:
         #     self.deleteGroup ( group )
 
