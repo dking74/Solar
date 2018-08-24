@@ -403,7 +403,7 @@ class IntelligridMig  ( ):
                 except Exception:
                     print ( "Unable to update Custom Property for node: %s" % node_name )
 
-    def updateDefinition ( self , id , *definition ):
+    def updateDefinition ( self , id , **definition ):
 
         '''
             Method name      : updateDefinition
@@ -429,13 +429,13 @@ class IntelligridMig  ( ):
                                             
                 )
 
-        print ( *definition )
+        print ( **definition )
 
         newDef = self._solarwinds.invoke (
                     'Orion.Container',
                     'UpdateDefinition',
                     currentDef [ 'results' ][ 0 ][ 'DefinitionID' ],
-                    *definition
+                    **definition
 
                 )
 
