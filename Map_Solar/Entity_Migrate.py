@@ -147,7 +147,7 @@ class IntelligridMig  ( ):
                 # if a group exists for the legacy id
                 if legG_exists:
                     existingList.remove ( lgroup )
-                    self.modifyGroup    ( lgroup )
+                    #self.modifyGroup    ( lgroup )
 
                 # if a site id group exists -->
                 # remove the group from list and delete 
@@ -161,7 +161,7 @@ class IntelligridMig  ( ):
                             'Definition': filter_g
                         }
                     ]
-                    self.updateDefinitions ( lID , definition )
+                    self.updateDefinition ( lID , definition )
 
                 #if !legG_exists and !sitG_exists:
 
@@ -599,8 +599,8 @@ class IntelligridMig  ( ):
                         )
 
             # check if the group is unable to be added
-            except requests.exceptions.HTTPError as detail:
-                print ( detail )
+            except ( requests.exceptions.HTTPError, Exception ):
+                print ( "Unable to create group" )
                 return None, 0
 
             # otherwise, add the group to the list and return
