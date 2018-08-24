@@ -180,7 +180,7 @@ class IntelligridMig  ( ):
                     self.createMapPoint            (                    group_id , latitude , longitude                    )
                     self.addDefinitions            (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
                                                                                  group_created                             )
-            
+            #testing
 
         # for group in existingList:
         #     self.deleteGroup ( group )
@@ -541,7 +541,7 @@ class IntelligridMig  ( ):
                     { "Name"      : results [ 'results' ][ 0 ][ 'Name' ], \
                       "Definition": results [ 'results' ][ 0 ][ 'Uri'  ]  }
                 ]
-                
+
                 return group_info, results [ 'results' ][ 0 ][ 'ContainerID' ]
         else:
             print ( "Group {} already exists".format ( group_name.upper ( ) ) )
