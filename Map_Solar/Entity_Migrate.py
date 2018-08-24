@@ -140,45 +140,56 @@ class IntelligridMig  ( ):
 
                 # determine if the nodes have a group in the base group
                 legG_exists = sitG_exists     = False
-                legG_exists, lgroup, lID      = self.findNodeContain ( legacy_loc , existingList ) 
+                legG_exists, lgroup, lID      = self.getNodeContain ( legacy_loc , existingList ) 
                 if site_id != legacy_loc:
-                    sitG_exists, sgroup, sID  = self.findNodeContain ( site_id    , existingList )
+                    sitG_exists, sgroup, sID  = self.getNodeContain ( site_id    , existingList )
+
+                if ( legG_exists and sitG_exists ) and ( lID != sID ):
+                    existingList.remove ( )
+                    existingList.remove ( )
+                    self.deleteGroup    ( )
+                    self.deleteGroup    ( )
+
+                    self.createGroupWProperties ( )
+
+                #if ( legG_exists and sitG_exists ) and ( lID == sID ):
+                    existingList.remove ( lgroup )
+                    self.updateGroup    (        )
 
                 # if a group exists for the legacy id
-                if legG_exists:
+                elif ( legG_exists and not sitG_exists ):
                     existingList.remove ( lgroup )
-                    #self.modifyGroup    ( lgroup )
+                    newDefinition = {
+                        'Name'      : 
+                        'Definition':
+                    }
+                    self.updateGroup      (       )
+                    self.updateDefinition ( lID , )
 
                 # if a site id group exists -->
                 # remove the group from list, delete the group, and update the definition of the group
-                if ( sitG_exists ) and ( lID != sID ) and ( lID != 0 ):
+                elif ( sitG_exists and not legG_exists ):
                     existingList.remove ( sgroup )
                     self.deleteGroup    ( sgroup )
                     filter_g = "filter:/Orion.Nodes[StartsWith(Caption,'{}') or StartsWith(Caption,'{}')]".format ( legacy_loc , site_id )
-                    definition = {
+                    newDefinition = {
                             'Name'      : lgroup,
                             'Definition': filter_g
                     }
-                    self.deleteDefinition ( lID                )
-                    self.updateDefinition ( lID , **definition )
+                    self.deleteDefinition ( lID                   )
+                    self.updateDefinition ( lID , **newDefinition )
 
-                #if !legG_exists and !sitG_exists:
-
+                #else:
+                # name, filtering         = self.getQueryInfo ( legacy_info , site_info , legacy_loc , site_id )
+                # node_list               = [ { 'Name' : name, 'Definition' : filtering } ]
+                # group_created, group_id = self.createGroup ( loc_name , loc_name , node_list )
+                # self.addDefinitions               (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
+                #                                                                group_created                                )
 
             # if no node exists by the name
             else:
                 print ( "There were no nodes matching: {} or {}".format ( legacy_loc , site_id ) )
 
-            # if there are entities found and the groups dont have a group already
-            # --> add the nodes to a group while creating group
-            if (     legacy_info or     site_info   ) and \
-               ( not legG_exists or not sitG_exists ):
-
-                # create the new group after determining what nodes should be added to group
-                name, filtering         = self.getQueryInfo ( legacy_info , site_info , legacy_loc , site_id )
-                node_list               = [ { 'Name' : name, 'Definition' : filtering } ]
-                group_created, group_id = self.createGroup ( loc_name , loc_name , node_list )
-                
                 # if there is a group created, or existent --> 
                 # 1. update custom properties
                 # 2. update map point
@@ -188,8 +199,7 @@ class IntelligridMig  ( ):
                                                                address, loc_id, emprv_dist, prim_dist                         )
                     self.updateGroupProps             (                        group_id , **properties                        )
                     self.createMapPoint               (                    group_id , latitude , longitude                    )
-                    self.addDefinitions               (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
-                                                                                 group_created                                )
+                    
         # for group in existingList:
         #     self.deleteGroup ( group )
 
@@ -688,8 +698,6 @@ class IntelligridMig  ( ):
                                             
                 )
 
-        print ( currentDef )
-
         newDef = self._solarwinds.invoke (
                     'Orion.Container',
                     'DeleteDefinition',
@@ -839,29 +847,7 @@ class IntelligridMig  ( ):
 
         return result
 
-    def createNodeProps  ( self ):
-
-        self.__load_worksheet            ( self._inputFile )
-
-        for ROW in range ( 3 , self._intelligridSheet.max_row + 1 ):
-
-            # get the column info from row
-            legacy_loc = self._intelligridSheet.cell ( row=ROW , column=1  ).value
-            site_id    = self._intelligridSheet.cell ( row=ROW , column=5  ).value
-            owning_co  = self._intelligridSheet.cell ( row=ROW , column=9  ).value
-
-            # get the information for existing nodes
-            legacy_info = self.detExistingNode ( legacy_loc )
-            site_info   = self.detExistingNode (   site_id  )
-
-            # if there are entities found --> add the nodes to a group while creating group
-            if legacy_info:
-                self.updateNodeProp ( legacy_loc.lower ( ) , 'Owning_Company' , str ( owning_co ) )
-
-            if site_info:
-                self.updateNodeProp ( site_id.lower    ( ) , 'Owning_Company' , str ( owning_co ) )
-
-    def findNodeContain  ( self , node_name , existingGroups ):
+    def getNodeContain   ( self , node_name , existingGroups ):
 
         '''
             Method name    : findNodeContain
