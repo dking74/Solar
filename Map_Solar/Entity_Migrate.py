@@ -785,10 +785,11 @@ class IntelligridMig  ( ):
 
         # if there is container info available, see if there is one matching the existing groups
         if len ( result_list ) > 0:
-            return  [ [True, group_holder [ 'Name' ], group_holder [ 'ID' ] ] for group_holder in result_list if group_holder [ 'Name' ] in existingGroups break]
-
+            for group_holder in result_list:
+                if group_holder [ 'Name' ] in existingGroups: return True, group_holder [ 'Name' ], group_holder [ 'ID' ]
+       
         # return that the group did not exist
-        return [ False, "None", 0 ]
+        return False, "None", 0
 
 
 # class SolarProperties ( ABC ):
