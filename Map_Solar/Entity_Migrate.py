@@ -429,6 +429,8 @@ class IntelligridMig  ( ):
                                             
                 )
 
+        print ( *definition )
+
         newDef = self._solarwinds.invoke (
                     'Orion.Container',
                     'UpdateDefinition',
