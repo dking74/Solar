@@ -161,7 +161,7 @@ class IntelligridMig  ( ):
 
             # if there are entities found and the groups dont have a group already
             # --> add the nodes to a group while creating group
-            if (  legacy_info or  site_info   ) and
+            if (  legacy_info or  site_info   ) and \
                ( !legG_exists or !sitG_exists ):
 
                 # create the new group after determining what nodes should be added to group
