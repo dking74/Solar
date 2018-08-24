@@ -63,7 +63,7 @@ class IntelligridMig  ( ):
             except requests.exceptions.HTTPError:
                 valid = False
 
-    def __load_worksheet ( self , file ):
+    def __loadWorksheet  ( self , file ):
     
 
         '''
@@ -96,7 +96,7 @@ class IntelligridMig  ( ):
         # get top level group
         self._baseGroup, self._baseGroupID = self.createGroup  ( baseGroup , "This is the base-level group" , [] )
 
-    def read_workbook    ( self , baseGroup ):
+    def readWorkbook     ( self , baseGroup ):
 
         '''
             Method name    : read_workbook
@@ -111,7 +111,7 @@ class IntelligridMig  ( ):
 
         # setup the base level groups and read the file
         self._setupBaseGroups            (    baseGroup    )
-        self.__load_worksheet            ( self._inputFile )
+        self.__loadWorksheet             ( self._inputFile )
         existingList = self.getGroupList (    baseGroup    )
 
         # iterate through every row in workbook
@@ -131,7 +131,7 @@ class IntelligridMig  ( ):
             emprv_dist = self._intelligridSheet.cell ( row=ROW , column=15 ).value
             prim_dist  = self._intelligridSheet.cell ( row=ROW , column=16 ).value 
 
-            # determine if nodes exist
+            # determine if the nodes exist
             legacy_info = self.detExistingNode ( legacy_loc )
             site_info   = self.detExistingNode (   site_id  )
 
@@ -139,18 +139,29 @@ class IntelligridMig  ( ):
             if legacy_info or site_info:
 
                 # determine if the nodes have a group in the base group
-                legG_exists, lgroup, lID = self.findNodeContain ( legacy_loc , existingList ) 
-                sitG_exists, sgroup, sID = self.findNodeContain ( site_id    , existingList )
+                legG_exists = sitG_exists     = False
+                legG_exists, lgroup, lID      = self.findNodeContain ( legacy_loc , existingList ) 
+                if site_id != legacy_loc:
+                    sitG_exists, sgroup, sID  = self.findNodeContain ( site_id    , existingList )
 
                 # if a group exists for the legacy id
                 if legG_exists:
                     existingList.remove ( lgroup )
+                    self.modifyGroup    ( lgroup )
 
                 # if a site id group exists -->
                 # remove the group from list and delete 
                 if ( sitG_exists ) and ( lID != sID ) and ( lID != 0 ):
                     existingList.remove ( sgroup )
                     self.deleteGroup    ( sgroup )
+                    filter_g = "filter:/Orion.Nodes[StartsWith(Caption,'{}') or StartsWith(Caption,'{}')]".format ( legacy_loc , site_id )
+                    definition = [
+                        {
+                            'Name'      : lgroup
+                            'Definition': filter_g
+                        }
+                    ]
+                    self.updateDefinitions ( lID , definition )
 
                 #if !legG_exists and !sitG_exists:
 
@@ -174,15 +185,28 @@ class IntelligridMig  ( ):
                 # 2. update map point
                 # 3. add group to base group
                 if group_created != None:
-                    properties = self.addGroupProp (           division, owning_co, asset_type, latitude, longitude, 
-                                                               address, loc_id, emprv_dist, prim_dist                      )
-                    self.updateGroupProps          (                        group_id , **properties                        )
-                    self.createMapPoint            (                    group_id , latitude , longitude                    )
-                    self.addDefinitions            (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
-                                                                                 group_created                             )
+                    properties = self.createGroupProp (           division, owning_co, asset_type, latitude, longitude, 
+                                                               address, loc_id, emprv_dist, prim_dist                         )
+                    self.updateGroupProps             (                        group_id , **properties                        )
+                    self.createMapPoint               (                    group_id , latitude , longitude                    )
+                    self.addDefinitions               (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
+                                                                                 group_created                                )
         # for group in existingList:
         #     self.deleteGroup ( group )
 
+    # def createSheetHeaderList ( self , worksheet ):
+
+    #   for col in range ( worksheet.max_row ) + 1:
+    #       self._headerList.append ( worksheet.cell ( row=1 , column=col ).value )
+
+    # def getRowData     ( self , worksheet , ROW ):
+
+        # for col in range ( worksheet.max_row ) + 1:
+        #   data.append ( worksheet.cell ( row=ROW , column=col ).value )
+        #
+
+        # 
+    
     def detExistingNode  ( self , check_str ):
 
         '''
@@ -230,36 +254,27 @@ class IntelligridMig  ( ):
             Returns        : None
         '''
 
-        # determine size of arguments to get the correct verb
         if len ( *args ) == 1:
-
-            # update the container
-            try:
-                self._solarwinds.invoke ( 
-                    "Orion.Container",
-                    'AddDefinition',
-                    id_num,
-                    *args[0]
-                )
-
-            except Exception as detail:
-                print ( detail + " \nUnable to add container: {}".format ( id_num) )
-
+            definition = 'AddDefinition'
+            argument   = args [ 0 ]
         else:
+            definition = 'AddDefinitions'
+            argument   = args
 
+        try:
             # update the container
             try:
                 self._solarwinds.invoke ( 
                     "Orion.Container",
-                    'AddDefinitions',
+                    definition,
                     id_num,
-                    *args
+                    *argument
                 )
-            
+
             except Exception as detail:
                 print ( detail + " \nUnable to add container: {}".format ( id_num) )
 
-    def addGroupProp     ( self , division=None, owning_co=None, asset_type=None, latitude=None, longitude=None,
+    def createGroupProp  ( self , division=None, owning_co=None, asset_type=None, latitude=None, longitude=None,
                              address=None, loc_id=None , emprv_dist=None , prim_dist=None ):
 
         '''
@@ -389,6 +404,40 @@ class IntelligridMig  ( ):
                 except Exception:
                     print ( "Unable to update Custom Property for node: %s" % node_name )
 
+    def updateDefinition ( self , id , *definition ):
+
+        '''
+            Method name      : updateDefinition
+        
+            Method Purpose   : To update the definition of a group
+        
+            Parameters       :
+                - id         : The id of the group to update
+                - definition : The new definition for the group
+        
+            Returns          : None
+        '''
+
+        currentDef = self._solarwinds.query (
+                    """
+                    SELECT
+                        DefinitionID
+                    FROM
+                        Orion.ContainerMemberDefinition
+                    WHERE
+                        ContainerID='{}'
+                    """.format ( id )
+                                            
+                )
+
+        newDef = self._solarwinds.invoke (
+                    'Orion.Container',
+                    'UpdateDefinition',
+                    currentDef [ 'results' ][ 0 ][ 'DefinitionID' ],
+                    *definition
+
+                )
+
     def createMapPoint   ( self, group_id , latitude , longitude ):
 
         '''
@@ -438,6 +487,35 @@ class IntelligridMig  ( ):
         
             Returns           : None
         '''
+        
+        # prop_find = self._solarwinds.query (    
+        #                                         """
+        #                                         SELECT
+        #                                             N.Description
+        #                                         FROM
+        #                                             Orion.CustomProperty N
+        #                                         WHERE
+        #                                             N.Description='{}'
+        #                                         """.format ( descr )
+        #                                     )
+
+        # if len ( prop_find [ 'results' ] ) == 0:
+        #     try:
+        #         self._solarwinds.invoke (   
+        #                                     entity_type,
+        #                                     'CreateCustomProperty',
+        #                                     prop,
+        #                                     descr,
+        #                                     type_prop,
+        #                                     size,
+        #                                     #None for x in range ( 7 )
+        #                                 )
+        #     except Exception:
+        #         print ( "Unable to create custom property." )
+
+        # else:
+        #     print ( "Custom property already exists for: {}".format ( prop ) )
+
 
         # iterate through each property
         for prop, descr in properties.items ( ):
@@ -472,6 +550,7 @@ class IntelligridMig  ( ):
                                                 descr,
                                                 type_prop,
                                                 size,
+                                                #None for x in range ( 7 )
                                                 None,
                                                 None,
                                                 None,
@@ -679,12 +758,12 @@ class IntelligridMig  ( ):
 
         # if there are nodes under leg_info, but not site_info
         if   leg_info == True and sit_info == False:
-            name       = "{}".format     (     l_loc     )
+            name       = "{}".format ( l_loc )
             filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}')]".format ( l_loc )
 
         # if there are nodes under site_info, but not leg_info
         elif leg_info == False and sit_info == True:
-            name       = "{}".format     (     s_loc     )
+            name       = "{}".format ( s_loc )
             filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}')]".format ( s_loc )
 
         # if there are nodes under both leg_info and site_info
@@ -789,6 +868,16 @@ class IntelligridMig  ( ):
         # return that the group did not exist
         return False, "None", 0
 
+# class QueryInfo ( ):
+
+#   @staticmethod
+#   def queryGroup     ( ):
+
+#   @staticmethod
+#   def queryNode      ( ):
+
+#   @staticmethod
+#   def queryTimedData ( ):
 
 # class SolarProperties ( ABC ):
 
