@@ -600,7 +600,7 @@ class IntelligridMig  ( ):
 
             # check if the group is unable to be added
             except ( requests.exceptions.HTTPError, Exception ):
-                print ( "Unable to create group" )
+                print ( "Unable to create group because invalid members were detected." )
                 return None, 0
 
             # otherwise, add the group to the list and return
