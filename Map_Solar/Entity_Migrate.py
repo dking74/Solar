@@ -785,7 +785,7 @@ class IntelligridMig  ( ):
 
         # if there is container info available, see if there is one matching the existing groups
         if len ( result_list ) > 0:
-            return  [   True, group_holder [ 'Name' ], group_holder [ 'ID' ] \
+            return  [  [ True, group_holder [ 'Name' ], group_holder [ 'ID' ] ] \
                         for group_holder in result_list if group_holder [ 'Name' ] in existingGroups
                     ]
 
