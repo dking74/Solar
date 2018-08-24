@@ -179,7 +179,7 @@ class IntelligridMig  ( ):
                     self.updateGroupProps          (                        group_id , **properties                        )
                     self.createMapPoint            (                    group_id , latitude , longitude                    )
                     self.addDefinitions            (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
-
+                                                                                 group_created                             )
             
 
         # for group in existingList:
@@ -537,20 +537,19 @@ class IntelligridMig  ( ):
                 results = self.getGroupInfo ( group_name )
 
                 # add the new group info to a list and return
-                group_info = []
-                group_info.append (
+                group_info = [
                     { "Name"      : results [ 'results' ][ 0 ][ 'Name' ], \
                       "Definition": results [ 'results' ][ 0 ][ 'Uri'  ]  }
-                )
+                ]
+                
                 return group_info, results [ 'results' ][ 0 ][ 'ContainerID' ]
         else:
             print ( "Group {} already exists".format ( group_name.upper ( ) ) )
 
-            group_info = []
-            group_info.append (
+            group_info = [
                 { "Name"      : container [ 'results' ][ 0 ][ 'Name' ], \
-                  "Definition": container [ 'results' ][ 0 ][ 'Uri'  ]  }
-            )
+                  "Definition": container [ 'results' ][ 0 ][ 'Uri'  ]  } 
+            ]
 
             return group_info, container [ 'results' ][ 0 ][ 'ContainerID' ]
 
