@@ -150,18 +150,17 @@ class IntelligridMig  ( ):
                     #self.modifyGroup    ( lgroup )
 
                 # if a site id group exists -->
-                # remove the group from list and delete 
+                # remove the group from list, delete the group, and update the definition of the group
                 if ( sitG_exists ) and ( lID != sID ) and ( lID != 0 ):
                     existingList.remove ( sgroup )
                     self.deleteGroup    ( sgroup )
                     filter_g = "filter:/Orion.Nodes[StartsWith(Caption,'{}') or StartsWith(Caption,'{}')]".format ( legacy_loc , site_id )
-                    definition = [
-                        {
+                    definition = {
                             'Name'      : lgroup,
                             'Definition': filter_g
-                        }
-                    ]
-                    self.updateDefinition ( lID , definition )
+                    }
+                    self.deleteDefinition ( lID                )
+                    self.updateDefinition ( lID , **definition )
 
                 #if !legG_exists and !sitG_exists:
 
@@ -429,8 +428,6 @@ class IntelligridMig  ( ):
                                             
                 )
 
-        print ( definition )
-
         newDef = self._solarwinds.invoke (
                     'Orion.Container',
                     'UpdateDefinition',
@@ -666,6 +663,38 @@ class IntelligridMig  ( ):
             
             else: return True
 
+    def deleteDefinition ( self , id ):
+
+        '''
+            Method name    : deleteDefinition
+        
+            Method Purpose : To delete a definition from a group
+        
+            Parameters     :
+                - id       : The id of the group
+        
+            Returns        : None
+        '''
+
+        currentDef = self._solarwinds.query (
+                    """
+                    SELECT
+                        DefinitionID
+                    FROM
+                        Orion.ContainerMemberDefinition
+                    WHERE
+                        ContainerID='{}'
+                    """.format ( id )
+                                            
+                )
+
+        newDef = self._solarwinds.invoke (
+                    'Orion.Container',
+                    'DeleteDefinition',
+                    currentDef [ 'results' ][ 0 ][ 'DefinitionID' ]
+
+                )
+
     def getGroupInfo     ( self , name ):
 
         '''
@@ -869,16 +898,12 @@ class IntelligridMig  ( ):
         # return that the group did not exist
         return False, "None", 0
 
-# class QueryInfo ( ):
+# class GroupInfo       ( )
 
-#   @staticmethod
-#   def queryGroup     ( ):
+# class GroupMemberInfo ( )
 
-#   @staticmethod
-#   def queryNode      ( ):
+# class NodeInfo        ( )
 
-#   @staticmethod
-#   def queryTimedData ( ):
 
 # class SolarProperties ( ABC ):
 
@@ -898,15 +923,15 @@ class IntelligridMig  ( ):
 #         pass
     
 #     @abstractmethod
-#     def updateProperites ( self , name ):
+#     def updateProperties ( self , name ):
 #         ''' To be implented in child classes '''
 #         pass
 
 # class NodeProperties  ( SolarProperties ):
 
 #     '''
-#         Class Name    : NodeProperties
-#     	Class Purpose : To allow for updating node properties
+#           Class Name    : NodeProperties
+#           Class Purpose : To allow for updating node properties
 #     '''
 
 #     def __init__ ( self , solarwinds_instance ):
@@ -922,7 +947,8 @@ class IntelligridMig  ( ):
 #             Returns                   : NONE
 #         '''
 
-#         self._solar = solarwinds_instance
+#         self._solarwinds = solarwinds_instance
+#         self._data       = NodeInfo.queryAllProperties ( )
 
 #     def getProperties    ( self , name ):
 
@@ -952,7 +978,8 @@ class IntelligridMig  ( ):
 #             Returns        : NONE
 #         '''
 
-#         self._solar = solarwinds_instance
+#         self._solarwinds = solarwinds_instance
+#         self._data       = GroupInfo.queryAllProperties ( )
 
 #     def getProperties    ( self , name ):
 
