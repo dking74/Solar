@@ -94,28 +94,27 @@ class IntelligridMig  ( ):
         '''
 
         # get top level group
-        baseGroup          = self.createGroup  ( baseGroup , "This is the base-level group" , [] )
-        self._baseGroupID  = self.getGroupInfo ( baseGroup )
+        self._baseGroup, self._baseGroupID = self.createGroup  ( baseGroup , "This is the base-level group" , [] )
 
-    def read_workbook    ( self ):
+    def read_workbook    ( self , baseGroup ):
 
         '''
             Method name    : read_workbook
         
             Method Purpose : To read the inputted workbook
         
-            Parameters     : None
+            Parameters     :
+                -baseGroup : The name given to the base-level group
         
             Returns        : None
         '''
 
         # setup the base level groups and read the file
-        self._setupBaseGroups            (      "Test"     )
+        self._setupBaseGroups            (    baseGroup    )
         self.__load_worksheet            ( self._inputFile )
-        existingList = self.getGroupList (      "Test"     )
+        existingList = self.getGroupList (    baseGroup    )
 
-        # create list for holding all created entities and iterate through workbook
-        createdList = []
+        # iterate through every row in workbook
         for ROW in range ( 3 , self._intelligridSheet.max_row + 1 ):
 
             # get the column info from row
@@ -136,21 +135,40 @@ class IntelligridMig  ( ):
             legacy_info = self.detExistingNode ( legacy_loc )
             site_info   = self.detExistingNode (   site_id  )
 
-            # if there are entities found --> add the nodes to a group while creating group
+            # if one of the nodes exist
             if legacy_info or site_info:
 
+                # determine if the nodes have a group in the base group
+                legG_exists, lgroup, lID = self.findNodeContain ( legacy_loc , existingList ) 
+                sitG_exists, sgroup, sID = self.findNodeContain ( site_id    , existingList )
+
+                # if a group exists for the legacy id
+                if legG_exists:
+                    existingList.remove ( lgroup )
+
+                # if a site id group exists -->
+                # remove the group from list and delete 
+                if ( sitG_exists ) and ( lID != sID ) and ( lID != 0 ):
+                    existingList.remove ( sgroup )
+                    self.deleteGroup    ( sgroup )
+
+                if !legG_exists and !sitG_exists:
+
+
+            # if no node exists by the name
+            else:
+                print ( "There were no nodes matching: {} or {}".format ( legacy_loc , site_id ) )
+
+            # if there are entities found and the groups dont have a group already
+            # --> add the nodes to a group while creating group
+            if (  legacy_info or  site_info   ) and
+               ( !legG_exists or !sitG_exists ):
+
                 # create the new group after determining what nodes should be added to group
-                name , filtering        = self.getQueryInfo ( legacy_info , site_info , legacy_loc , site_id )
+                name, filtering         = self.getQueryInfo ( legacy_info , site_info , legacy_loc , site_id )
                 node_list               = [ { 'Name' : name, 'Definition' : filtering } ]
                 group_created, group_id = self.createGroup ( loc_name , loc_name , node_list )
                 
-                if group_created in existingList:
-                    existingList.remove ( group_created )
-                else:
-                    createdList.append ( group_created )
-                    group_info = self.getGroupInfo ( group_created )
-
-
                 # if there is a group created, or existent --> 
                 # 1. update custom properties
                 # 2. update map point
@@ -161,15 +179,8 @@ class IntelligridMig  ( ):
                     self.updateGroupProps          (                        group_id , **properties                        )
                     self.createMapPoint            (                    group_id , latitude , longitude                    )
                     self.addDefinitions            (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
-                                                                                   group_created                           )
-                    
 
-
-                # update properties of group, whether just created or already created
-                
             
-            else:
-                print ( "There were no nodes matching: {} or {}".format ( legacy_loc , site_id ) )
 
         # for group in existingList:
         #     self.deleteGroup ( group )
@@ -656,18 +667,18 @@ class IntelligridMig  ( ):
     def getQueryInfo     ( self , leg_info , sit_info , l_loc , s_loc ):
 
         '''
-            Method name    : __getName
+            Method name      : __getName
         
-            Method Purpose : To retrieve the information needed for query
+            Method Purpose   : To retrieve the information needed for query
         
-            Parameters     :
-                -leg_info  : Bool value indicating whether there is legacy infor.
-                -sit_info  : Bool value indicating whether there is site infor.
-                -l_loc     : The legacy caption as a string
-                -s_loc     : The site caption as a string
+            Parameters       :
+                -leg_info    : Bool value indicating whether there is legacy infor.
+                -sit_info    : Bool value indicating whether there is site infor.
+                -l_loc       : The legacy caption as a string
+                -s_loc       : The site caption as a string
         
-            Returns        :
-                - Name     : The name given to the query
+            Returns          :
+                - Name       : The name given to the query
                 - Filter_app : The filter to apply to the query
         '''
 
@@ -746,6 +757,21 @@ class IntelligridMig  ( ):
 
     def findNodeContain  ( self , node_name , existingGroups ):
 
+        '''
+            Method name    : findNodeContain
+        
+            Method Purpose : To find if a node is contained by a group
+        
+            Parameters           :  
+                - node_name      : The node to check if it is contained
+                - existingGroups : A list of all the groups created already
+        
+            Returns              :
+                - True/False     : Whether there is a group containing node or not
+                - GroupName/None : The name of the group of none
+                - GroupID/0      : The id if it exists or 0 if none
+        '''
+        
         node_group  = self._solarwinds.query (  """"
                                                 SELECT
                                                     c.Container.DisplayName as Name,
@@ -758,16 +784,16 @@ class IntelligridMig  ( ):
                                                 """.format ( node_name )
                                              )
 
-        print ( existingGroups )
-        print ( node_group [ 'results' ] )
-        
-        for group_holder in node_group [ 'results' ]:
-            #print ( group_holder [ 'Member' ] , group_holder [ 'Name' ] )
-            if group_holder [ 'Name' ] in existingGroups:
-                print ( "The group already exists" )
+        result_list = node_group [ 'results' ]
 
+        # if there is container info available, see if there is one matching the existing groups
+        if len ( result_list ) > 0:
+            return  [   True, group_holder [ 'Name' ], group_holder [ 'ID' ] \
+                        for group_holder in existingGroups if group_holder [ 'Name' ] in existingGroups
+                    ]
 
-
+        # return that the group did not exist
+        return [ False, "None", 0 ]
 
 
 # class SolarProperties ( ABC ):
