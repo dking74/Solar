@@ -666,14 +666,14 @@ class IntelligridMig  ( ):
     def deleteDefinition ( self , id ):
 
         '''
-            Method name    : deleteDefinition
+            Method name      : deleteDefinition
         
-            Method Purpose : To delete a definition from a group
+            Method Purpose   : To delete a definition from a group
         
-            Parameters     :
-                - id       : The id of the group
+            Parameters       :
+                - id         : The id of the group
         
-            Returns        : None
+            Returns          : None
         '''
 
         currentDef = self._solarwinds.query (
@@ -694,6 +694,8 @@ class IntelligridMig  ( ):
                     currentDef [ 'results' ][ 0 ][ 'DefinitionID' ]
 
                 )
+
+        print ( newDef )
 
     def getGroupInfo     ( self , name ):
 
