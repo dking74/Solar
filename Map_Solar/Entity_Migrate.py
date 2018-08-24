@@ -261,18 +261,17 @@ class IntelligridMig  ( ):
             definition = 'AddDefinitions'
             argument   = args
 
+        # update the container
         try:
-            # update the container
-            try:
-                self._solarwinds.invoke ( 
-                    "Orion.Container",
-                    definition,
-                    id_num,
-                    *argument
-                )
+            self._solarwinds.invoke ( 
+                "Orion.Container",
+                definition,
+                id_num,
+                *argument
+            )
 
-            except Exception as detail:
-                print ( detail + " \nUnable to add container: {}".format ( id_num) )
+        except Exception as detail:
+            print ( detail + " \nUnable to add container: {}".format ( id_num ) )
 
     def createGroupProp  ( self , division=None, owning_co=None, asset_type=None, latitude=None, longitude=None,
                              address=None, loc_id=None , emprv_dist=None , prim_dist=None ):
