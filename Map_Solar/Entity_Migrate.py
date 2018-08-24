@@ -213,10 +213,8 @@ class IntelligridMig  ( ):
                                                 )  
 
         # if there are nodes, return True
-        if len ( query_res [ 'results' ] ) > 0:
-            return True
-        else:
-            return False         
+        if len ( query_res [ 'results' ] ) > 0: return True
+        else                                  : return False         
 
     def addDefinitions   ( self , id_num , *args ):
 
