@@ -688,14 +688,14 @@ class IntelligridMig  ( ):
                                             
                 )
 
+        print ( currentDef )
+
         newDef = self._solarwinds.invoke (
                     'Orion.Container',
                     'DeleteDefinition',
                     currentDef [ 'results' ][ 0 ][ 'DefinitionID' ]
 
                 )
-
-        print ( newDef )
 
     def getGroupInfo     ( self , name ):
 
