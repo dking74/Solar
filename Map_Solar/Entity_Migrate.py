@@ -157,7 +157,7 @@ class IntelligridMig  ( ):
                     filter_g = "filter:/Orion.Nodes[StartsWith(Caption,'{}') or StartsWith(Caption,'{}')]".format ( legacy_loc , site_id )
                     definition = [
                         {
-                            'Name'      : lgroup
+                            'Name'      : lgroup,
                             'Definition': filter_g
                         }
                     ]
