@@ -163,6 +163,7 @@ class IntelligridMig  ( ):
             if legacy_info or site_info:
 
                 # determine if the nodes have a group in the base group
+                group_id                      = 0
                 legG_exists = sitG_exists     = False
                 legG_exists, lgroup, lID      = self.getNodeContain ( legacy_loc , existingList ) 
                 if site_id != legacy_loc:
@@ -180,39 +181,52 @@ class IntelligridMig  ( ):
                                                     )
 
                 if   ( legG_exists and sitG_exists ) and ( lID == sID ):
-                    existingList.remove              (          lgroup           )
-                    group_created = self.updateGroup ( lID , loc_name , loc_name )
+                    existingList.remove (          lgroup           )
+                    self.updateGroup    ( lID , loc_name , loc_name )
+                    group_id      = lID
 
                 elif ( legG_exists and sitG_exists ) and ( lID != sID ):
-                    existingList.remove              (          lgroup           )
-                    existingList.remove              (          sgroup           )
-                    self.deleteGroup                 (          sgroup           )
-                    group_created = self.updateGroup ( lID , loc_name , loc_name )
-                    self.deleteDefinition            (           lID             )
-                    self.updateDefinition            (      lID , dynamicQuery   )
+                    existingList.remove   (          lgroup           )
+                    existingList.remove   (          sgroup           )
+                    self.deleteGroup      (          sgroup           )
+                    self.updateGroup      ( lID , loc_name , loc_name )
+                    self.deleteDefinition (           lID             )
+                    self.updateDefinition (      lID , dynamicQuery   )
                     group_id = lID
 
                 elif ( legG_exists and not sitG_exists ):
-                    existingList.remove               (           lgroup          )
-                    group_created = self.updateGroup  ( lID , loc_name , loc_name )
-                    self.deleteDefinition             (            lID            )
-                    self.updateDefinition             (      lID , dynamicQuery   )
+                    existingList.remove   (           lgroup          )
+                    self.updateGroup      ( lID , loc_name , loc_name )
+                    self.deleteDefinition (            lID            )
+                    self.updateDefinition (      lID , dynamicQuery   )
                     group_id = lID
 
                 elif ( sitG_exists and not legG_exists ):
-                    existingList.remove               (           sgroup          )
-                    group_created = self.updateGroup  ( sID , loc_name , loc_name )
-                    self.deleteDefinition             (            sID            )
-                    self.updateDefinition             (      sID , dynamicQuery   )
+                    existingList.remove   (           sgroup          )
+                    self.updateGroup      ( sID , loc_name , loc_name )
+                    self.deleteDefinition (            sID            )
+                    self.updateDefinition (      sID , dynamicQuery   )
                     group_id = sID
 
                 else:
-                    group_created, group_id = self.createGroup ( loc_name , loc_name , dynamicQuery )
-                    self.createDefinition                      ( self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,\
-                                                                                 group_created                          )
+                    group_id = self.createGroup ( loc_name , loc_name , dynamicQuery )
+                    self.createDefinition       ( 
+                                                    self._baseGroupID     ,
+                                                    self.createFilter (
+                                                            "Orion.Groups",
+                                                            loc_name      ,
+                                                            "StartsWith"  ,
+                                                            [
+                                                                {
+                                                                    'ContainerID': group_id
+                                                                }
+                                                            ]
+
+                                                        )
+                                                )
 
                 # update the properties
-                if group_created != None:
+                if group_id != None:
                     properties = self.createGroupProp ( division, owning_co, asset_type, latitude, longitude, 
                                                          address, loc_id, emprv_dist, prim_dist               )
                     self.updateGroupProps             (              group_id , **properties                  )
@@ -768,31 +782,15 @@ class IntelligridMig  ( ):
             # check if the group is unable to be added
             except ( requests.exceptions.HTTPError, Exception ):
                 print ( "Unable to create group because invalid members were detected." )
-                return None, 0
+                return None
 
             # otherwise, add the group to the list and return
             else:
                 print ( "Group {} created!".format ( group_name.upper ( ) ) )
-
-                # get the new info of the group
-                results = self.getGroupInfo ( group_name )
-
-                # add the new group info to a list and return
-                group_info = [
-                    { "Name"      : results [ 'results' ][ 0 ][ 'Name' ], \
-                      "Definition": results [ 'results' ][ 0 ][ 'Uri'  ]  }
-                ]
-
-                return group_info, results [ 'results' ][ 0 ][ 'ContainerID' ]
+                return id_num
         else:
             print ( "Group {} already exists".format ( group_name.upper ( ) ) )
-
-            group_info = [
-                { "Name"      : container [ 'results' ][ 0 ][ 'Name' ], \
-                  "Definition": container [ 'results' ][ 0 ][ 'Uri'  ]  } 
-            ]
-
-            return group_info, container [ 'results' ][ 0 ][ 'ContainerID' ]
+            return container [ 'results' ][ 0 ][ 'ContainerID' ]
 
     def deleteGroup       ( self , name ):
 
