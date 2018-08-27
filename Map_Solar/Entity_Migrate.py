@@ -180,6 +180,8 @@ class IntelligridMig  ( ):
                                                         ] 
                                                     )
 
+                print ( dynamicQuery )
+
                 if   ( legG_exists and sitG_exists ) and ( lID == sID ):
                     existingList.remove (          lgroup           )
                     self.updateGroup    ( lID , loc_name , loc_name )
@@ -209,21 +211,16 @@ class IntelligridMig  ( ):
                     group_id = sID
 
                 else:
-                    group_id = self.createGroup ( loc_name , loc_name , dynamicQuery )
-                    self.createDefinition       ( 
-                                                    self._baseGroupID     ,
-                                                    self.createFilter (
-                                                            "Orion.Groups",
-                                                            loc_name      ,
-                                                            "StartsWith"  ,
-                                                            [
-                                                                {
-                                                                    'ContainerID': group_id
-                                                                }
-                                                            ]
-
-                                                        )
-                                                )
+                    group_id, group_uri = self.createGroup      ( loc_name , loc_name , dynamicQuery )
+                    if group_id != None:  self.createDefinition ( 
+                                                                    self._baseGroupID     ,
+                                                                    [
+                                                                        {
+                                                                            'Name'      : loc_name,
+                                                                            'Definition': group_uri
+                                                                        }
+                                                                    ]
+                                                                )
 
                 # update the properties
                 if group_id != None:
@@ -782,15 +779,18 @@ class IntelligridMig  ( ):
             # check if the group is unable to be added
             except ( requests.exceptions.HTTPError, Exception ):
                 print ( "Unable to create group because invalid members were detected." )
-                return None
+                return None, None
 
             # otherwise, add the group to the list and return
             else:
                 print ( "Group {} created!".format ( group_name.upper ( ) ) )
-                return id_num
+                results = self.getGroupInfo ( group_name )
+                return results [ 'results' ][ 0 ][ 'ContainerID' ], \
+                       results [ 'results' ][ 0 ][     'Uri'     ] 
         else:
             print ( "Group {} already exists".format ( group_name.upper ( ) ) )
-            return container [ 'results' ][ 0 ][ 'ContainerID' ]
+            return container [ 'results' ][ 0 ][ 'ContainerID' ], \
+                   container [ 'results' ][ 0 ][      'Uri'    ]
 
     def deleteGroup       ( self , name ):
 
