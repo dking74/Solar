@@ -404,12 +404,12 @@ class IntelligridMig  ( ):
             Parameters       :
                 - filterType : What entity we are filtering on
                 - nameInput  : The name to give the dynamic query
-                - verbSearch : The verb that will be used to query entities
+                - verbSearch : The verb that will be used to query entities 
+                    *example - StartsWith or Contains (sql parse instructions)
                 - entityList : The list of dictionary definitions to query on 
         
             Returns          : The filter to apply
         '''
-
 
         # create a string that is used for parsing entities
         filterList   = []
@@ -421,7 +421,7 @@ class IntelligridMig  ( ):
         # create the actual filter
         name        = nameInput
         filtered    = "filter:/{}[{}]".format ( filterType , filterString )
-        applyFilter = [ 'Name': name , 'Definition' : filtered ]
+        applyFilter = [ { 'Name': name , 'Definition' : filtered } ]
 
         return applyFilter
 
