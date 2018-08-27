@@ -162,10 +162,10 @@ class IntelligridMig  ( ):
 
                 elif ( legG_exists and not sitG_exists ):
                     existingList.remove ( lgroup )
-                    newDefinition = {
-                        'Name'      : 
-                        'Definition':
-                    }
+                    #newDefinition = {
+                    #    'Name'      : 
+                    #    'Definition':
+                    #}
                     #group_created = self.updateGroup (       )
                     #self.updateDefinition ( lID , )
  
