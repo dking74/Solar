@@ -415,7 +415,8 @@ class IntelligridMig  ( ):
 
         # create a string that is used for parsing entities
         filterList   = []
-        for dictionary in entityList:
+        for dictionary in entityList [ 0 ]:
+            print ( dictionary )
             dictItem   = dictionary.items ( )
             print ( dictItem )
             key        = dictItem [ 0 ][ 0 ]
