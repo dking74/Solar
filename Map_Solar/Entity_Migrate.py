@@ -354,6 +354,7 @@ class IntelligridMig  ( ):
             Returns          : None
         '''
 
+        # get the definition id for the appropriate container
         currentDef = self._solarwinds.query (
                     """
                     SELECT
@@ -366,13 +367,17 @@ class IntelligridMig  ( ):
                                             
                 )
 
-        newDef = self._solarwinds.invoke (
-                    'Orion.Container',
-                    'UpdateDefinition',
-                    currentDef [ 'results' ][ 0 ][ 'DefinitionID' ],
-                    definition
+        # see if there are any results and then update the definition
+        if len ( currentDef [ 'results' ] ) > 0:
+            newDef = self._solarwinds.invoke (
+                        'Orion.Container',
+                        'UpdateDefinition',
+                        currentDef [ 'results' ][ 0 ][ 'DefinitionID' ],
+                        definition
 
-                )
+                    )
+        else:
+            print ( "There were no nodes matching the definition criteria" )
 
     def updateGroup       ( self , id , newName , newDescription ):
 
