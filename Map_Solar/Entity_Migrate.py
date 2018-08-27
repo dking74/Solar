@@ -1,7 +1,7 @@
 from openpyxl import Workbook
 from orionsdk import SwisClient
 from abc      import ABC
-import openpyxl, requests, sys 
+import openpyxl, requests, sys , signal , os
 
 class IntelligridMig  ( ):
 
@@ -109,6 +109,30 @@ class IntelligridMig  ( ):
             Returns        : None
         '''
 
+        def pauseExecution ( sig , frame ):
+    
+            '''
+                Method name    : pauseExecution
+            
+                Method Purpose : To pause the execution when reading workbook
+            
+                Parameters     : 
+                    - sig      : The signal received
+                    - frame    : The frame received
+            
+                Returns        : None
+            '''
+
+            if sig == signal.SIGINT:
+                in_val = input ( "Continue? Y/N:\t" )
+
+                if   in_val == "Y" or in_val == "y": pass
+                elif in_val == "N" or in_val == "n": 
+                    os.kill ( os.getpid ( ) , signal.SIGABRT )
+
+        # setup a signal handler so that users can pause execution
+        signal.signal ( signal.SIGINT , pauseExecution )
+
         # setup the base level groups and read the file
         self._setupBaseGroups            (    baseGroup    )
         self.__loadWorksheet             ( self._inputFile )
@@ -144,71 +168,59 @@ class IntelligridMig  ( ):
                 if site_id != legacy_loc:
                     sitG_exists, sgroup, sID  = self.getNodeContain ( site_id    , existingList )
 
-                # if the sites have different groups associated with them
-                if   ( legG_exists and sitG_exists ) and ( lID != sID ):
-                   
-                    # remove the groups from the existing list and delete both groups from Solarwinds
-                    existingList.remove ( lgroup )
-                    existingList.remove ( sgroup )
-                    self.deleteGroup    ( lgroup )
-                    self.deleteGroup    ( sgroup )
+                # create a filter for what to include in the group
+                dynamicQuery = self.createFilter   ( 
+                                                        "Orion.Nodes" ,
+                                                        self.__formNameString ( legacy_info , site_info , legacy_loc , site_id ),
+                                                        "StartsWith"  , 
+                                                        [ 
+                                                            { 'Caption': site_id    },
+                                                            { 'Caption': legacy_loc }
+                                                        ] 
+                                                    )
 
-                    # create a new group
-                    #group_created, group_id = self.createGroup ( lgroup , lgroup , )
+                if   ( legG_exists and sitG_exists ) and ( lID == sID ):
+                    existingList.remove              (          lgroup           )
+                    group_created = self.updateGroup ( lID , loc_name , loc_name )
 
-                elif ( legG_exists and sitG_exists ) and ( lID == sID ):
-                    existingList.remove              (             lgroup            )
-                    group_created = self.updateGroup ( lID , legacy_loc , legacy_loc )
+                elif ( legG_exists and sitG_exists ) and ( lID != sID ):
+                    existingList.remove              (          lgroup           )
+                    existingList.remove              (          sgroup           )
+                    self.deleteGroup                 (          sgroup           )
+                    group_created = self.updateGroup ( lID , loc_name , loc_name )
+                    self.deleteDefinition            (           lID             )
+                    self.updateDefinition            (      lID , dynamicQuery   )
+                    group_id = lID
 
                 elif ( legG_exists and not sitG_exists ):
-                    existingList.remove               (             lgroup            )
-                    group_created = self.updateGroup  ( lID , legacy_loc , legacy_loc )
-                    dynamicQuery  = self.createFilter ( 
-                                                        "Orion.Nodes" ,
-                                                        "{}, {}".format ( legacy_loc , site_id ) ,
-                                                        "StartsWith" , 
-                                                        [ 
-                                                            { 'Caption': site_id },
-                                                            { 'Caption': legacy_loc }
-                                                        ] 
-                                                      )
-                    self.deleteDefinition             (               lID             )
-                    #self.updateDefinition             ( lID ,      dynamicQuery [ 0 ] )
+                    existingList.remove               (           lgroup          )
+                    group_created = self.updateGroup  ( lID , loc_name , loc_name )
+                    self.deleteDefinition             (            lID            )
+                    self.updateDefinition             (      lID , dynamicQuery   )
+                    group_id = lID
 
                 elif ( sitG_exists and not legG_exists ):
-                    existingList.remove               (          sgroup         )
-                    group_created = self.updateGroup  ( sID , site_id , site_id )
-                    dynamicQuery  = self.createFilter ( 
-                                                        "Orion.Nodes" ,
-                                                        "{}, {}".format ( legacy_loc , site_id ) ,
-                                                        "StartsWith" , 
-                                                        [ 
-                                                            { 'Caption': site_id },
-                                                            { 'Caption': legacy_loc }
-                                                        ] 
-                                                      )
-                    self.deleteDefinition             (               sID             )
-                    #self.updateDefinition             ( sID ,      dynamicQuery [ 0 ] )
+                    existingList.remove               (           sgroup          )
+                    group_created = self.updateGroup  ( sID , loc_name , loc_name )
+                    self.deleteDefinition             (            sID            )
+                    self.updateDefinition             (      sID , dynamicQuery   )
+                    group_id = sID
 
-                #else:
-                # node_list               = [ { 'Name' : name, 'Definition' : filtering } ]
-                # group_created, group_id = self.createGroup ( loc_name , loc_name , node_list )
-                # self.createDefinition               (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
-                #                                                                group_created                                )
+                else:
+                    group_created, group_id = self.createGroup ( loc_name , loc_name , dynamicQuery )
+                    self.createDefinition                      ( self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,\
+                                                                                 group_created                          )
 
+                # update the properties
+                if group_created != None:
+                    properties = self.createGroupProp ( division, owning_co, asset_type, latitude, longitude, 
+                                                         address, loc_id, emprv_dist, prim_dist               )
+                    self.updateGroupProps             (              group_id , **properties                  )
+                    self.updateMapPoint               (           group_id , latitude , longitude             )
+            
             # if no node exists by the name
             else:
                 print ( "There were no nodes matching: {} or {}".format ( legacy_loc , site_id ) )
-
-                # if there is a group created, or existent --> 
-                # 1. update custom properties
-                # 2. update map point
-                # 3. add group to base group
-                if group_created != None:
-                    properties = self.createGroupProp (           division, owning_co, asset_type, latitude, longitude, 
-                                                               address, loc_id, emprv_dist, prim_dist                         )
-                    self.updateGroupProps             (                        group_id , **properties                        )
-                    self.createMapPoint               (                    group_id , latitude , longitude                    )
                     
         for group in existingList:
             self.deleteGroup ( group )
@@ -258,6 +270,25 @@ class IntelligridMig  ( ):
         # if there are nodes, return True
         if len ( query_res [ 'results' ] ) > 0: return True
         else                                  : return False         
+
+    def __formNameString  ( self, legacyInfo , siteInfo , legacyStr , siteStr ):
+
+        '''
+            Method name    : formNameString
+        
+            Method Purpose : To build a string for the dynamic query name
+        
+            Parameters     :
+        
+            Returns        :
+        '''
+
+        names = []
+        if legacyInfo: names.append ( legacyStr )
+        if siteInfo  : names.append (  siteStr  )
+        nameString = ", ".join ( names )
+
+        return nameString 
 
     def updateGroupProps  ( self , entity_id , **properties ):
 
@@ -414,6 +445,49 @@ class IntelligridMig  ( ):
             return newName
 
         return None
+
+    def updateMapPoint    ( self , group_id , latitude , longitude ):
+
+        '''
+            Method name     : updateMapPoint
+        
+            Method Purpose  : To update a current map point for a group
+        
+            Parameters      :
+                - group_id  : The id of the group to modify
+                - latitude  : The latitude coordinate
+                - longitude : The longitude coordinate
+        
+            Returns         : None
+        '''
+
+        # see if there are any map points for the group
+        mapPointView = self._solarwinds.query   ( 
+                            """
+                            SELECT
+                                Uri
+                            FROM
+                                Orion.WorldMap.Point
+                            WHERE
+                                PointId='{}'
+                            """.format ( group_id )
+                        )
+
+        # pull the uri from the info
+        uri = mapPointView [ 'results' ][ 0 ][ 'Uri' ]
+
+        # create the update map point
+        props = {
+            'Latitude'  : latitude,
+            'Longitude' : longitude
+        }
+
+        # update the map point, otherwise create a new one
+        try:
+            self._solarwinds.update ( uri , **props )
+
+        except Exception:
+            self.createMapPoint ( group_id , latitude , longitude )
 
     def createFilter      ( self , filterType , nameInput , verbSearch , *entityList ):
 
@@ -666,7 +740,7 @@ class IntelligridMig  ( ):
             Parameters         :
                 - group_name   : The name given to the group
                 - description  : The description of the group
-                - *nodes       : The ndoes to add
+                - *nodes       : The nodes to add
         
             Returns            :
                 - group_info   : The group created in a list
