@@ -394,7 +394,7 @@ class IntelligridMig  ( ):
                     True
                 )
 
-    def createFilter      ( self , filterType , nameInput , verbSearch , **entityList ):
+    def createFilter      ( self , filterType , nameInput , verbSearch , *entityList ):
 
         '''
             Method name      : createFilter
@@ -415,8 +415,12 @@ class IntelligridMig  ( ):
 
         # create a string that is used for parsing entities
         filterList   = []
-        for key , value in entityList.items ( ):
-            print ( key , value )
+        lenList      = len ( entityList )
+        for dictionary in lenList:
+            dictItem   = dictionary.items ( )
+            print ( dictItem )
+            key        = dictItem [ 0 ][ 0 ]
+            value      = dictItem [ 0 ][ 1 ]
             tempString = "{}({},{})".format ( verbSearch , key , value ) 
             filterList.append ( tempString )
         filterString = ' or '.join ( filterList )
