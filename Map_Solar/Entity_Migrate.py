@@ -340,7 +340,7 @@ class IntelligridMig  ( ):
                 except Exception:
                     print ( "Unable to update Custom Property for node: %s" % node_name )
 
-    def updateDefinition  ( self , id , **definition ):
+    def updateDefinition  ( self , id , *definition ):
 
         '''
             Method name      : updateDefinition
@@ -373,14 +373,14 @@ class IntelligridMig  ( ):
                         'Orion.Container',
                         'UpdateDefinition',
                         currentDef [ 'results' ][ 0 ][ 'DefinitionID' ],
-                        definition
+                        definition [ 0 ]
 
                     )
         else:
             print ( "There is no current definition to update. Creating..." )
-            print ( list ( definition ) )
-            print ( len ( list ( definition ) ) )
-            self.createDefinition ( id , list ( definition ) )
+            print ( definition )
+            print ( len ( definition ) )
+            self.createDefinition ( id , definition )
 
     def updateGroup       ( self , id , newName , newDescription ):
 
