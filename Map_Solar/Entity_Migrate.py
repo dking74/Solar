@@ -144,28 +144,31 @@ class IntelligridMig  ( ):
                 if site_id != legacy_loc:
                     sitG_exists, sgroup, sID  = self.getNodeContain ( site_id    , existingList )
 
-                if ( legG_exists and sitG_exists ) and ( lID != sID ):
-                    existingList.remove ( )
-                    existingList.remove ( )
-                    self.deleteGroup    ( )
-                    self.deleteGroup    ( )
-
-                    self.createGroupWProperties ( )
-
-                #if ( legG_exists and sitG_exists ) and ( lID == sID ):
+                # if the sites have different groups associated with them
+                if   ( legG_exists and sitG_exists ) and ( lID != sID ):
+                   
+                    # remove the groups from the existing list and delete both groups from Solarwinds
                     existingList.remove ( lgroup )
-                    self.updateGroup    (        )
+                    existingList.remove ( sgroup )
+                    self.deleteGroup    ( lgroup )
+                    self.deleteGroup    ( sgroup )
 
-                # if a group exists for the legacy id
+                    # create a new group
+                    #group_created, group_id = self.createGroup ( lgroup , lgroup , )
+
+                elif ( legG_exists and sitG_exists ) and ( lID == sID ):
+                    existingList.remove ( lgroup )
+                    #group_created = self.updateGroup    (        )
+
                 elif ( legG_exists and not sitG_exists ):
                     existingList.remove ( lgroup )
                     newDefinition = {
                         'Name'      : 
                         'Definition':
                     }
-                    self.updateGroup      (       )
-                    self.updateDefinition ( lID , )
-
+                    #group_created = self.updateGroup (       )
+                    #self.updateDefinition ( lID , )
+ 
                 # if a site id group exists -->
                 # remove the group from list, delete the group, and update the definition of the group
                 elif ( sitG_exists and not legG_exists ):
@@ -180,10 +183,10 @@ class IntelligridMig  ( ):
                     self.updateDefinition ( lID , **newDefinition )
 
                 #else:
-                # name, filtering         = self.getQueryInfo ( legacy_info , site_info , legacy_loc , site_id )
+                # name, filtering         = self.__createQueryInfo ( legacy_info , site_info , legacy_loc , site_id )
                 # node_list               = [ { 'Name' : name, 'Definition' : filtering } ]
                 # group_created, group_id = self.createGroup ( loc_name , loc_name , node_list )
-                # self.addDefinitions               (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
+                # self.createDefinition               (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
                 #                                                                group_created                                )
 
             # if no node exists by the name
@@ -216,7 +219,7 @@ class IntelligridMig  ( ):
 
         # 
     
-    def detExistingNode  ( self , check_str ):
+    def detExistingNode   ( self , check_str ):
 
         '''
             Method name     : detExistingNode
@@ -249,40 +252,215 @@ class IntelligridMig  ( ):
         if len ( query_res [ 'results' ] ) > 0: return True
         else                                  : return False         
 
-    def addDefinitions   ( self , id_num , *args ):
+    def updateGroupProps  ( self , entity_id , **properties ):
 
         '''
-            Method name    : addDefinitions
+            Method name      : updateCustProps
         
-            Method Purpose : To add entities to a group
+            Method Purpose   : To add properties to a group
         
-            Parameters     :
-                - id       : The container id
-                - args     : The entities to add
+            Parameters       :
+                - entity_id  : The entity to update
+                - properties : The properties to give entity
         
-            Returns        : None
+            Returns          : None
         '''
 
-        if len ( *args ) == 1:
-            definition = 'AddDefinition'
-            argument   = args [ 0 ]
-        else:
-            definition = 'AddDefinitions'
-            argument   = args
+        # get the Uri of the entity
+        result_uri = self._solarwinds.query (   """
+                                                SELECT
+                                                    Uri
+                                                FROM
+                                                    Orion.Container
+                                                WHERE
+                                                    ContainerID='{}'
+                                                """.format ( entity_id )
+                                            )
 
-        # update the container
+        # pull the uri directly
+        uri = result_uri [ 'results' ][ 0 ][ 'Uri' ]
+
+        # update the entity with inputted properties
         try:
-            self._solarwinds.invoke ( 
-                "Orion.Container",
-                definition,
-                id_num,
-                *argument
-            )
+            self._solarwinds.update ( uri + '/CustomProperties' , **properties )
 
         except Exception as detail:
-            print ( detail + " \nUnable to add container: {}".format ( id_num ) )
+            print ( detail + " \nUnable to update custom properties for id: {}".format ( entity_id ) )
 
-    def createGroupProp  ( self , division=None, owning_co=None, asset_type=None, latitude=None, longitude=None,
+    def updateNodeProp    ( self , node_name , cust_prop , value ):
+        
+        '''
+            Method name      : updateNodeCustProp
+        
+            Method Purpose   : To add property to a node
+        
+            Parameters       :
+                - node_name  : The node to update
+                - cust_prop  : The custom property to update
+                - value      : Value to give custom property
+        
+            Returns          : None
+        '''
+
+        # make sure value is not empty
+        if value != "":
+
+            # get the Uri of the entity
+            result_uri = self._solarwinds.query (   """
+                                                    SELECT
+                                                        Uri
+                                                    FROM
+                                                        Orion.Nodes
+                                                    WHERE
+                                                        Caption
+                                                    LIKE 
+                                                        '{}%'
+                                                    """.format ( node_name )
+                                                )
+
+             # create dictionary for property
+            properties = { cust_prop : value }
+
+            # pull the uri directly
+            for result in result_uri [ 'results']:  
+                uri = result [ 'Uri' ]
+
+                # update the entity with inputted properties
+                try:
+                    self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+                    print                   ( "Updated Custom Property for node: %s" % node_name )
+
+                except Exception:
+                    print ( "Unable to update Custom Property for node: %s" % node_name )
+
+    def updateDefinition  ( self , id , **definition ):
+
+        '''
+            Method name      : updateDefinition
+        
+            Method Purpose   : To update the definition of a group
+        
+            Parameters       :
+                - id         : The id of the group to update
+                - definition : The new definition for the group
+        
+            Returns          : None
+        '''
+
+        currentDef = self._solarwinds.query (
+                    """
+                    SELECT
+                        DefinitionID
+                    FROM
+                        Orion.ContainerMemberDefinition
+                    WHERE
+                        ContainerID='{}'
+                    """.format ( id )
+                                            
+                )
+
+        newDef = self._solarwinds.invoke (
+                    'Orion.Container',
+                    'UpdateDefinition',
+                    currentDef [ 'results' ][ 0 ][ 'DefinitionID' ],
+                    definition
+
+                )
+
+    def updateGroup       ( self , id , newName , newDescription ):
+
+        '''
+            Method name          : updateGroup
+        
+            Method Purpose       : To update the group with new properties
+        
+            Parameters           :
+                - id             : The id of the group to update
+                - newName        : The new name to give the group
+                - newDescription : The new description to give the group
+        
+            Returns              : None
+        '''
+
+        update = self._solarwinds.invoke (
+                    "Orion.Container",
+                    "UpdateContainer",
+                    id,
+                    newName,
+                    "Core",
+                    60,
+                    0,
+                    newDescription,
+                    True
+                )
+
+    def createFilter      ( self , filterType , nameInput , verbSearch , **entityList ):
+
+        '''
+            Method name      : createFilter
+        
+            Method Purpose   : To create a filter for members in group
+        
+            Parameters       :
+                - filterType : What entity we are filtering on
+                - nameInput  : The name to give the dynamic query
+                - verbSearch : The verb that will be used to query entities
+                - entityList : The list of dictionary definitions to query on 
+        
+            Returns          : The filter to apply
+        '''
+
+
+        # create a string that is used for parsing entities
+        filterList   = []
+        for key , value in entityList.items ( ):
+            tempString = "{}({},{})".filter ( verbSearch , key , value ) 
+            filterList.append ( tempString )
+        filterString = ' or '.join ( filterList )
+
+        # create the actual filter
+        name        = nameInput
+        filtered    = "filter:/{}[{}]".format ( filterType , filterString )
+        applyFilter = [ 'Name': name , 'Definition' : filtered ]
+
+        return applyFilter
+
+    def __createQueryInfo ( self , leg_info , sit_info , l_loc , s_loc ):
+
+        '''
+            Method name      : __getName
+        
+            Method Purpose   : To retrieve the information needed for query
+        
+            Parameters       :
+                -leg_info    : Bool value indicating whether there is legacy infor.
+                -sit_info    : Bool value indicating whether there is site infor.
+                -l_loc       : The legacy caption as a string
+                -s_loc       : The site caption as a string
+        
+            Returns          :
+                - Name       : The name given to the query
+                - Filter_app : The filter to apply to the query
+        '''
+
+        # if there are nodes under leg_info, but not site_info
+        if   leg_info == True and sit_info == False:
+            name       = "{}".format ( l_loc )
+            filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}')]".format ( l_loc )
+
+        # if there are nodes under site_info, but not leg_info
+        elif leg_info == False and sit_info == True:
+            name       = "{}".format ( s_loc )
+            filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}')]".format ( s_loc )
+
+        # if there are nodes under both leg_info and site_info
+        elif leg_info == True and sit_info == True:
+            name = "{}, {}".format ( l_loc , s_loc )
+            filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}') or StartsWith(SysName,'{}')]".format ( l_loc , s_loc )
+
+        return name , filter_app
+
+    def createGroupProp   ( self , division=None, owning_co=None, asset_type=None, latitude=None, longitude=None,
                              address=None, loc_id=None , emprv_dist=None , prim_dist=None ):
 
         '''
@@ -331,122 +509,7 @@ class IntelligridMig  ( ):
 
         return cust_prop
 
-    def updateGroupProps ( self , entity_id , **properties ):
-
-        '''
-            Method name      : updateCustProps
-        
-            Method Purpose   : To add properties to a group
-        
-            Parameters       :
-                - entity_id  : The entity to update
-                - properties : The properties to give entity
-        
-            Returns          : None
-        '''
-
-        # get the Uri of the entity
-        result_uri = self._solarwinds.query (   """
-                                                SELECT
-                                                    Uri
-                                                FROM
-                                                    Orion.Container
-                                                WHERE
-                                                    ContainerID='{}'
-                                                """.format ( entity_id )
-                                            )
-
-        # pull the uri directly
-        uri = result_uri [ 'results' ][ 0 ][ 'Uri' ]
-
-        # update the entity with inputted properties
-        try:
-            self._solarwinds.update ( uri + '/CustomProperties' , **properties )
-
-        except Exception as detail:
-            print ( detail + " \nUnable to update custom properties for id: {}".format ( entity_id ) )
-
-    def updateNodeProp   ( self , node_name , cust_prop , value ):
-        
-        '''
-            Method name      : updateNodeCustProp
-        
-            Method Purpose   : To add property to a node
-        
-            Parameters       :
-                - node_name  : The node to update
-                - cust_prop  : The custom property to update
-                - value      : Value to give custom property
-        
-            Returns          : None
-        '''
-
-        # make sure value is not empty
-        if value != "":
-
-            # get the Uri of the entity
-            result_uri = self._solarwinds.query (   """
-                                                    SELECT
-                                                        Uri
-                                                    FROM
-                                                        Orion.Nodes
-                                                    WHERE
-                                                        Caption
-                                                    LIKE 
-                                                        '{}%'
-                                                    """.format ( node_name )
-                                                )
-
-             # create dictionary for property
-            properties = { cust_prop : value }
-
-            # pull the uri directly
-            for result in result_uri [ 'results']:  
-                uri = result [ 'Uri' ]
-
-                # update the entity with inputted properties
-                try:
-                    self._solarwinds.update ( uri + '/CustomProperties' , **properties )
-                    print                   ( "Updated Custom Property for node: %s" % node_name )
-
-                except Exception:
-                    print ( "Unable to update Custom Property for node: %s" % node_name )
-
-    def updateDefinition ( self , id , **definition ):
-
-        '''
-            Method name      : updateDefinition
-        
-            Method Purpose   : To update the definition of a group
-        
-            Parameters       :
-                - id         : The id of the group to update
-                - definition : The new definition for the group
-        
-            Returns          : None
-        '''
-
-        currentDef = self._solarwinds.query (
-                    """
-                    SELECT
-                        DefinitionID
-                    FROM
-                        Orion.ContainerMemberDefinition
-                    WHERE
-                        ContainerID='{}'
-                    """.format ( id )
-                                            
-                )
-
-        newDef = self._solarwinds.invoke (
-                    'Orion.Container',
-                    'UpdateDefinition',
-                    currentDef [ 'results' ][ 0 ][ 'DefinitionID' ],
-                    definition
-
-                )
-
-    def createMapPoint   ( self, group_id , latitude , longitude ):
+    def createMapPoint    ( self, group_id , latitude , longitude ):
 
         '''
             Method name      : updateMapPoint
@@ -481,7 +544,7 @@ class IntelligridMig  ( ):
         except Exception as detail:
             print ( detail + " \nUnable to create map point for id: {}".format ( group_id ) )
 
-    def createCustProps  ( self , entity_type , **properties ):
+    def createCustProps   ( self , entity_type , **properties ):
 
         '''
             Method name       : createCustProps
@@ -572,7 +635,40 @@ class IntelligridMig  ( ):
             else:
                 print ( "Custom property already exists for: {}".format ( prop ) )
 
-    def createGroup      ( self , group_name, description, *nodes ):
+    def createDefinition  ( self , id_num , *args ):
+
+        '''
+            Method name    : addDefinitions
+        
+            Method Purpose : To add entities to a group
+        
+            Parameters     :
+                - id       : The container id
+                - args     : The entities to add
+        
+            Returns        : None
+        '''
+
+        if len ( *args ) == 1:
+            definition = 'AddDefinition'
+            argument   = args [ 0 ]
+        else:
+            definition = 'AddDefinitions'
+            argument   = args
+
+        # update the container
+        try:
+            self._solarwinds.invoke ( 
+                "Orion.Container",
+                definition,
+                id_num,
+                *argument
+            )
+
+        except Exception as detail:
+            print ( detail + " \nUnable to add container: {}".format ( id_num ) )
+
+    def createGroup       ( self , group_name, description, *nodes ):
 
         '''
             Method name        : createGroup
@@ -636,7 +732,7 @@ class IntelligridMig  ( ):
 
             return group_info, container [ 'results' ][ 0 ][ 'ContainerID' ]
 
-    def deleteGroup      ( self , name ):
+    def deleteGroup       ( self , name ):
 
         '''
             Method name    : deleteEntity
@@ -673,7 +769,7 @@ class IntelligridMig  ( ):
             
             else: return True
 
-    def deleteDefinition ( self , id ):
+    def deleteDefinition  ( self , id ):
 
         '''
             Method name      : deleteDefinition
@@ -705,7 +801,7 @@ class IntelligridMig  ( ):
 
                 )
 
-    def getGroupInfo     ( self , name ):
+    def getGroupInfo      ( self , name ):
 
         '''
             Method name    : getGroupInfo
@@ -744,7 +840,7 @@ class IntelligridMig  ( ):
             else:
                 return entity_uri
 
-    def getGroupList     ( self , topLevelGroup ):
+    def getGroupList      ( self , topLevelGroup ):
 
         '''
             Method name         : findGroupList
@@ -778,76 +874,7 @@ class IntelligridMig  ( ):
            
         return groupList
 
-    def getQueryInfo     ( self , leg_info , sit_info , l_loc , s_loc ):
-
-        '''
-            Method name      : __getName
-        
-            Method Purpose   : To retrieve the information needed for query
-        
-            Parameters       :
-                -leg_info    : Bool value indicating whether there is legacy infor.
-                -sit_info    : Bool value indicating whether there is site infor.
-                -l_loc       : The legacy caption as a string
-                -s_loc       : The site caption as a string
-        
-            Returns          :
-                - Name       : The name given to the query
-                - Filter_app : The filter to apply to the query
-        '''
-
-        # if there are nodes under leg_info, but not site_info
-        if   leg_info == True and sit_info == False:
-            name       = "{}".format ( l_loc )
-            filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}')]".format ( l_loc )
-
-        # if there are nodes under site_info, but not leg_info
-        elif leg_info == False and sit_info == True:
-            name       = "{}".format ( s_loc )
-            filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}')]".format ( s_loc )
-
-        # if there are nodes under both leg_info and site_info
-        elif leg_info == True and sit_info == True:
-            name = "{}, {}".format ( l_loc , s_loc )
-            filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}') or StartsWith(SysName,'{}')]".format ( l_loc , s_loc )
-
-        return name , filter_app
-
-    def queryGroupInfo   ( self , name ):
-
-        # test function for querying data
-        file_test = open ( "test.txt" , "w" )
-        result = self._solarwinds.query (   """
-                                            SELECT
-                                                Year    ( r.DateTime ) as Year,
-                                                Month   ( r.DateTime ) as Month,
-                                                Day     ( r.DateTime ) as Day,
-                                                Hour    ( r.DateTime ) as Hour,
-                                                Minute  ( r.DateTime ) as Minute,
-                                                Second  ( r.DateTime ) as Second,
-                                                WeekDay ( r.DateTime ) as WeekDay,
-                                                r.Availability         as Available
-                                            FROM
-                                                Orion.ResponseTime r
-                                            WHERE 
-                                                r.Node.Caption='{}' AND
-                                                DayDiff ( r.DateTime , GetDate ( ) ) < 7
-                                            ORDER BY
-                                                r.DateTime
-                                            """.format ( name )
-                                        )
-                                        
-
-        #r.DateTime >= AddDate ( 'day' , -7 , getdate ( ) )
-
-        for res in result [ 'results' ]:
-            file_test.write ( str( res ) )
-
-        file_test.close ( )
-
-        return result
-
-    def getNodeContain   ( self , node_name , existingGroups ):
+    def getNodeContain    ( self , node_name , existingGroups ):
 
         '''
             Method name    : findNodeContain
@@ -885,6 +912,40 @@ class IntelligridMig  ( ):
        
         # return that the group did not exist
         return False, "None", 0
+
+    def queryGroupInfo    ( self , name ):
+
+        # test function for querying data
+        file_test = open ( "test.txt" , "w" )
+        result = self._solarwinds.query (   """
+                                            SELECT
+                                                Year    ( r.DateTime ) as Year,
+                                                Month   ( r.DateTime ) as Month,
+                                                Day     ( r.DateTime ) as Day,
+                                                Hour    ( r.DateTime ) as Hour,
+                                                Minute  ( r.DateTime ) as Minute,
+                                                Second  ( r.DateTime ) as Second,
+                                                WeekDay ( r.DateTime ) as WeekDay,
+                                                r.Availability         as Available
+                                            FROM
+                                                Orion.ResponseTime r
+                                            WHERE 
+                                                r.Node.Caption='{}' AND
+                                                DayDiff ( r.DateTime , GetDate ( ) ) < 7
+                                            ORDER BY
+                                                r.DateTime
+                                            """.format ( name )
+                                        )
+                                        
+
+        #r.DateTime >= AddDate ( 'day' , -7 , getdate ( ) )
+
+        for res in result [ 'results' ]:
+            file_test.write ( str( res ) )
+
+        file_test.close ( )
+
+        return result
 
 # class GroupInfo       ( )
 
