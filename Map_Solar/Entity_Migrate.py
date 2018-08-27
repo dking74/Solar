@@ -212,6 +212,7 @@ class IntelligridMig  ( ):
 
                 else:
                     group_id, group_uri = self.createGroup      ( loc_name , loc_name , dynamicQuery )
+                    print ( group_uri )
                     if group_id != None:  self.createDefinition ( 
                                                                     self._baseGroupID     ,
                                                                     [
@@ -722,6 +723,8 @@ class IntelligridMig  ( ):
             Returns        : None
         '''
 
+        print ( args )
+
         if len ( *args ) == 1:
             definition = 'AddDefinition'
             argument   = args [ 0 ]
@@ -738,8 +741,8 @@ class IntelligridMig  ( ):
                 *argument
             )
 
-        except Exception as detail:
-            print ( detail + " \nUnable to add container: {}".format ( id_num ) )
+        except Exception:
+            print ( "Unable to add container: {}".format ( id_num ) )
 
     def createGroup       ( self , group_name, description, *nodes ):
 
@@ -824,8 +827,8 @@ class IntelligridMig  ( ):
                                         container [ 'results' ][ 0 ][ 'ContainerID' ]
                                     )
 
-            except Exception as detail:
-                print ( detail + " \nUnable to delete container: {}".format ( name ) )
+            except Exception:
+                print ( "Unable to delete container: {}".format ( name ) )
             
             else: return True
 
