@@ -171,9 +171,9 @@ class IntelligridMig  ( ):
 
                 # create a filter for what to include in the group
                 dynamicQuery = self.createFilter   ( 
-                                                        "Orion.Nodes"                                                           , \
-                                                        self.__formNameString ( legacy_info , site_info , legacy_loc , site_id ), \
-                                                        "StartsWith"                                                            , \ 
+                                                        "Orion.Nodes"                                                           ,
+                                                        self.__formNameString ( legacy_info , site_info , legacy_loc , site_id ),
+                                                        "StartsWith"                                                            ,
                                                         [ 
                                                             { 'Caption': site_id    },
                                                             { 'Caption': legacy_loc }
