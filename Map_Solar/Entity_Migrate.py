@@ -171,9 +171,9 @@ class IntelligridMig  ( ):
 
                 # create a filter for what to include in the group
                 dynamicQuery = self.createFilter   ( 
-                                                        "Orion.Nodes" ,
-                                                        self.__formNameString ( legacy_info , site_info , legacy_loc , site_id ),
-                                                        "StartsWith"  , 
+                                                        "Orion.Nodes"                                                           , \
+                                                        self.__formNameString ( legacy_info , site_info , legacy_loc , site_id ), \
+                                                        "StartsWith"                                                            , \ 
                                                         [ 
                                                             { 'Caption': site_id    },
                                                             { 'Caption': legacy_loc }
@@ -214,7 +214,7 @@ class IntelligridMig  ( ):
                     group_id, group_uri = self.createGroup      ( loc_name , loc_name , dynamicQuery )
                     print ( group_uri )
                     if group_id != None:  self.createDefinition ( 
-                                                                    self._baseGroupID     ,
+                                                                    self._baseGroupID     , \
                                                                     [
                                                                         {
                                                                             'Name'      : loc_name,
@@ -225,7 +225,7 @@ class IntelligridMig  ( ):
 
                 # update the properties
                 if group_id != None:
-                    properties = self.createGroupProp ( division, owning_co, asset_type, latitude, longitude, 
+                    properties = self.createGroupProp ( division, owning_co, asset_type, latitude, longitude, \
                                                          address, loc_id, emprv_dist, prim_dist               )
                     self.updateGroupProps             (              group_id , **properties                  )
                     self.updateMapPoint               (           group_id , latitude , longitude             )
