@@ -377,7 +377,8 @@ class IntelligridMig  ( ):
 
                     )
         else:
-            print ( "There were no nodes matching the definition criteria" )
+            print ( "There is no current definition to update. Creating..." )
+            self.createDefinition ( id , list ( definition ) )
 
     def updateGroup       ( self , id , newName , newDescription ):
 
