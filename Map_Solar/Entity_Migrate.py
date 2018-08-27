@@ -411,16 +411,11 @@ class IntelligridMig  ( ):
             Returns          : The filter to apply
         '''
 
-        print ( entityList )
-
         # create a string that is used for parsing entities
         filterList   = []
         for dictionary in entityList [ 0 ]:
-            print ( dictionary )
-            dictItem   = dictionary.items ( )
-            print ( dictItem )
-            key        = dictItem [ 0 ][ 0 ]
-            value      = dictItem [ 0 ][ 1 ]
+            key        = dictionary.keys   ( ) [ 0 ]
+            value      = dictionary.values ( ) [ 0 ]
             tempString = "{}({},{})".format ( verbSearch , key , value ) 
             filterList.append ( tempString )
         filterString = ' or '.join ( filterList )
