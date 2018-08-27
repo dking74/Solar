@@ -115,7 +115,7 @@ class IntelligridMig  ( ):
         existingList = self.getGroupList (    baseGroup    )
 
         # iterate through every row in workbook
-        for ROW in range ( 3 , self._intelligridSheet.max_row + 1 ):
+        for ROW in range ( 3 , 20 ):
 
             # get the column info from row
             legacy_loc = self._intelligridSheet.cell ( row=ROW , column=1  ).value
@@ -157,33 +157,40 @@ class IntelligridMig  ( ):
                     #group_created, group_id = self.createGroup ( lgroup , lgroup , )
 
                 elif ( legG_exists and sitG_exists ) and ( lID == sID ):
-                    existingList.remove ( lgroup )
-                    #group_created = self.updateGroup    (        )
+                    existingList.remove              (             lgroup            )
+                    group_created = self.updateGroup ( lID , legacy_loc , legacy_loc )
 
                 elif ( legG_exists and not sitG_exists ):
-                    existingList.remove ( lgroup )
-                    #newDefinition = {
-                    #    'Name'      : 
-                    #    'Definition':
-                    #}
-                    #group_created = self.updateGroup (       )
-                    #self.updateDefinition ( lID , )
- 
-                # if a site id group exists -->
-                # remove the group from list, delete the group, and update the definition of the group
+                    existingList.remove               (             lgroup            )
+                    group_created = self.updateGroup  ( lID , legacy_loc , legacy_loc )
+                    dynamicQuery  = self.createFilter ( 
+                                                        "Orion.Nodes" ,
+                                                        "{}, {}".format ( legacy_loc , site_id ) ,
+                                                        "StartsWith" , 
+                                                        [ 
+                                                            { 'Caption': site_id },
+                                                            { 'Caption': legacy_loc }
+                                                        ] 
+                                                      )
+                    self.deleteDefinition             (               lID             )
+                    #self.updateDefinition             ( lID ,      dynamicQuery [ 0 ] )
+
                 elif ( sitG_exists and not legG_exists ):
-                    existingList.remove ( sgroup )
-                    self.deleteGroup    ( sgroup )
-                    filter_g = "filter:/Orion.Nodes[StartsWith(Caption,'{}') or StartsWith(Caption,'{}')]".format ( legacy_loc , site_id )
-                    newDefinition = {
-                            'Name'      : lgroup,
-                            'Definition': filter_g
-                    }
-                    self.deleteDefinition ( lID                   )
-                    self.updateDefinition ( lID , **newDefinition )
+                    existingList.remove               (          sgroup         )
+                    group_created = self.updateGroup  ( sID , site_id , site_id )
+                    dynamicQuery  = self.createFilter ( 
+                                                        "Orion.Nodes" ,
+                                                        "{}, {}".format ( legacy_loc , site_id ) ,
+                                                        "StartsWith" , 
+                                                        [ 
+                                                            { 'Caption': site_id },
+                                                            { 'Caption': legacy_loc }
+                                                        ] 
+                                                      )
+                    self.deleteDefinition             (               sID             )
+                    #self.updateDefinition             ( sID ,      dynamicQuery [ 0 ] )
 
                 #else:
-                # name, filtering         = self.__createQueryInfo ( legacy_info , site_info , legacy_loc , site_id )
                 # node_list               = [ { 'Name' : name, 'Definition' : filtering } ]
                 # group_created, group_id = self.createGroup ( loc_name , loc_name , node_list )
                 # self.createDefinition               (           self._baseGroupID [ 'results' ][ 0 ][ 'ContainerID' ] ,     \
@@ -203,8 +210,8 @@ class IntelligridMig  ( ):
                     self.updateGroupProps             (                        group_id , **properties                        )
                     self.createMapPoint               (                    group_id , latitude , longitude                    )
                     
-        # for group in existingList:
-        #     self.deleteGroup ( group )
+        for group in existingList:
+            self.deleteGroup ( group )
 
     # def createSheetHeaderList ( self , worksheet ):
 
@@ -379,20 +386,28 @@ class IntelligridMig  ( ):
                 - newName        : The new name to give the group
                 - newDescription : The new description to give the group
         
-            Returns              : None
+            Returns              : The name of the new group
         '''
 
-        update = self._solarwinds.invoke (
-                    "Orion.Container",
-                    "UpdateContainer",
-                    id,
-                    newName,
-                    "Core",
-                    60,
-                    0,
-                    newDescription,
-                    True
-                )
+        try: 
+            update = self._solarwinds.invoke (
+                        "Orion.Container",
+                        "UpdateContainer",
+                        id,
+                        newName,
+                        "Core",
+                        60,
+                        0,
+                        newDescription,
+                        True
+                    )
+        except Exception:
+            print ( "Unable to update group due to internal error")
+
+        else:
+            return newName
+
+        return None
 
     def createFilter      ( self , filterType , nameInput , verbSearch , *entityList ):
 
@@ -426,41 +441,6 @@ class IntelligridMig  ( ):
         applyFilter = [ { 'Name': name , 'Definition' : filtered } ]
 
         return applyFilter
-
-    def __createQueryInfo ( self , leg_info , sit_info , l_loc , s_loc ):
-
-        '''
-            Method name      : __getName
-        
-            Method Purpose   : To retrieve the information needed for query
-        
-            Parameters       :
-                -leg_info    : Bool value indicating whether there is legacy infor.
-                -sit_info    : Bool value indicating whether there is site infor.
-                -l_loc       : The legacy caption as a string
-                -s_loc       : The site caption as a string
-        
-            Returns          :
-                - Name       : The name given to the query
-                - Filter_app : The filter to apply to the query
-        '''
-
-        # if there are nodes under leg_info, but not site_info
-        if   leg_info == True and sit_info == False:
-            name       = "{}".format ( l_loc )
-            filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}')]".format ( l_loc )
-
-        # if there are nodes under site_info, but not leg_info
-        elif leg_info == False and sit_info == True:
-            name       = "{}".format ( s_loc )
-            filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}')]".format ( s_loc )
-
-        # if there are nodes under both leg_info and site_info
-        elif leg_info == True and sit_info == True:
-            name = "{}, {}".format ( l_loc , s_loc )
-            filter_app = "filter:/Orion.Nodes[StartsWith(SysName,'{}') or StartsWith(SysName,'{}')]".format ( l_loc , s_loc )
-
-        return name , filter_app
 
     def createGroupProp   ( self , division=None, owning_co=None, asset_type=None, latitude=None, longitude=None,
                              address=None, loc_id=None , emprv_dist=None , prim_dist=None ):
