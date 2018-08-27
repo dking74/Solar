@@ -378,6 +378,8 @@ class IntelligridMig  ( ):
                     )
         else:
             print ( "There is no current definition to update. Creating..." )
+            print ( list ( definition ) )
+            print ( len ( list ( definition ) ) )
             self.createDefinition ( id , list ( definition ) )
 
     def updateGroup       ( self , id , newName , newDescription ):
