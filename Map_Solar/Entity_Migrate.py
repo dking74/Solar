@@ -414,7 +414,7 @@ class IntelligridMig  ( ):
         # create a string that is used for parsing entities
         filterList   = []
         for key , value in entityList.items ( ):
-            tempString = "{}({},{})".filter ( verbSearch , key , value ) 
+            tempString = "{}({},{})".format ( verbSearch , key , value ) 
             filterList.append ( tempString )
         filterString = ' or '.join ( filterList )
 
