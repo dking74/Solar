@@ -981,15 +981,15 @@ class IntelligridMig  ( ):
         # test function for querying data
         result = self._solarwinds.query (   """
                                             SELECT
-                                                Tolocal ( r.DateTime ) as EventDate,
-                                                Year    ( EventDate ) as Year,
-                                                Month   ( EventDate ) as Month,
-                                                Day     ( EventDate ) as Day,
-                                                Hour    ( EventDate ) as Hour,
-                                                Minute  ( EventDate) as Minute,
-                                                Second  ( EventDate ) as Second,
-                                                WeekDay ( EventDate ) as WeekDay,
-                                                r.Availability         as Available,
+                                                Tolocal ( r.DateTime )         as EventDate,
+                                                Year    Tolocal ( r.DateTime ) as Year,
+                                                Month   Tolocal ( r.DateTime ) as Month,
+                                                Day     Tolocal ( r.DateTime ) as Day,
+                                                Hour    Tolocal ( r.DateTime ) as Hour,
+                                                Minute  Tolocal ( r.DateTime ) as Minute,
+                                                Second  Tolocal ( r.DateTime ) as Second,
+                                                WeekDay Tolocal ( r.DateTime ) as WeekDay,
+                                                r.Availability                 as Available,
                                                 GetUTCDate( )          as DateUTC,
                                                 GetDate ( )            as DateReg
                                             FROM
