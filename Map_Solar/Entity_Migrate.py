@@ -981,7 +981,7 @@ class IntelligridMig  ( ):
         # test function for querying data
         result = self._solarwinds.query (   """
                                             SELECT
-                                                Tolocal ( r.DateTime ) as Date,
+                                                Tolocal ( r.DateTime ) as EventDate,
                                                 Year    ( r.DateTime ) as Year,
                                                 Month   ( r.DateTime ) as Month,
                                                 Day     ( r.DateTime ) as Day,
