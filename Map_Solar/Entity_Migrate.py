@@ -979,7 +979,6 @@ class IntelligridMig  ( ):
     def queryGroupInfo    ( self , name ):
 
         # test function for querying data
-        file_test = open ( "test.txt" , "w" )
         result = self._solarwinds.query (   """
                                             SELECT
                                                 Year    ( r.DateTime ) as Year,
@@ -989,7 +988,8 @@ class IntelligridMig  ( ):
                                                 Minute  ( r.DateTime ) as Minute,
                                                 Second  ( r.DateTime ) as Second,
                                                 WeekDay ( r.DateTime ) as WeekDay,
-                                                r.Availability         as Available
+                                                r.Availability         as Available,
+                                                r.GetDate( )           as Date
                                             FROM
                                                 Orion.ResponseTime r
                                             WHERE 
@@ -1002,11 +1002,6 @@ class IntelligridMig  ( ):
                                         
 
         #r.DateTime >= AddDate ( 'day' , -7 , getdate ( ) )
-
-        for res in result [ 'results' ]:
-            file_test.write ( str( res ) )
-
-        file_test.close ( )
 
         return result
 
