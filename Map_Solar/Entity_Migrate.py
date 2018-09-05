@@ -989,6 +989,7 @@ class IntelligridMig  ( ):
                                                 Second  ( r.DateTime ) as Second,
                                                 WeekDay ( r.DateTime ) as WeekDay,
                                                 r.Availability         as Available,
+                                                r.DateTime           as Datetime,
                                                 GetDate( )           as Date
                                             FROM
                                                 Orion.ResponseTime r
