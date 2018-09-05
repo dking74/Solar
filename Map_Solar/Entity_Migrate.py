@@ -982,13 +982,13 @@ class IntelligridMig  ( ):
         result = self._solarwinds.query (   """
                                             SELECT
                                                 Tolocal ( r.DateTime ) as EventDate,
-                                                Year    ( r.DateTime ) as Year,
-                                                Month   ( r.DateTime ) as Month,
-                                                Day     ( r.DateTime ) as Day,
-                                                Hour    ( r.DateTime ) as Hour,
-                                                Minute  ( r.DateTime ) as Minute,
-                                                Second  ( r.DateTime ) as Second,
-                                                WeekDay ( r.DateTime ) as WeekDay,
+                                                Year    ( EventDate ) as Year,
+                                                Month   ( EventDate ) as Month,
+                                                Day     ( EventDate ) as Day,
+                                                Hour    ( EventDate ) as Hour,
+                                                Minute  ( EventDate) as Minute,
+                                                Second  ( EventDate ) as Second,
+                                                WeekDay ( EventDate ) as WeekDay,
                                                 r.Availability         as Available,
                                                 GetUTCDate( )          as DateUTC,
                                                 GetDate ( )            as DateReg
