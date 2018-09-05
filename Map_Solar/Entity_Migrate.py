@@ -981,21 +981,22 @@ class IntelligridMig  ( ):
         # test function for querying data
         result = self._solarwinds.query (   """
                                             SELECT
-                                                Year    ( r.DateTime ) as Year,
-                                                Month   ( r.DateTime ) as Month,
-                                                Day     ( r.DateTime ) as Day,
-                                                Hour    ( r.DateTime ) as Hour,
-                                                Minute  ( r.DateTime ) as Minute,
-                                                Second  ( r.DateTime ) as Second,
-                                                WeekDay ( r.DateTime ) as WeekDay,
+                                                TOLOCAL ( r.DateTime ) as Date,
+                                                Year    (     Date   ) as Year,
+                                                Month   (     Date   ) as Month,
+                                                Day     (     Date   ) as Day,
+                                                Hour    (     Date   ) as Hour,
+                                                Minute  (     Date   ) as Minute,
+                                                Second  (     Date   ) as Second,
+                                                WeekDay (     Date   ) as WeekDay,
                                                 r.Availability         as Available,
-                                                r.DateTime           as Datetime,
-                                                GetUTCDate( )           as Date
+                                                GetUTCDate( )          as DateUTC,
+                                                GetDate ( )            as DateReg
                                             FROM
                                                 Orion.ResponseTime r
                                             WHERE 
                                                 r.Node.Caption='{}' AND
-                                                DayDiff ( r.DateTime , GetDate ( ) ) < 7
+                                                DayDiff ( Date , GetDate ( ) ) < 7
                                             ORDER BY
                                                 r.DateTime
                                             """.format ( name )
