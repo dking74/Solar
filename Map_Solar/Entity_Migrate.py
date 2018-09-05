@@ -981,14 +981,14 @@ class IntelligridMig  ( ):
         # test function for querying data
         result = self._solarwinds.query (   """
                                             SELECT
-                                                TOLOCAL ( r.DateTime ) as Date,
-                                                Year    (     Date   ) as Year,
-                                                Month   (     Date   ) as Month,
-                                                Day     (     Date   ) as Day,
-                                                Hour    (     Date   ) as Hour,
-                                                Minute  (     Date   ) as Minute,
-                                                Second  (     Date   ) as Second,
-                                                WeekDay (     Date   ) as WeekDay,
+                                                Tolocal ( r.DateTime ) as Date,
+                                                Year    ( r.DateTime ) as Year,
+                                                Month   ( r.DateTime ) as Month,
+                                                Day     ( r.DateTime ) as Day,
+                                                Hour    ( r.DateTime ) as Hour,
+                                                Minute  ( r.DateTime ) as Minute,
+                                                Second  ( r.DateTime ) as Second,
+                                                WeekDay ( r.DateTime ) as WeekDay,
                                                 r.Availability         as Available,
                                                 GetUTCDate( )          as DateUTC,
                                                 GetDate ( )            as DateReg
@@ -996,7 +996,7 @@ class IntelligridMig  ( ):
                                                 Orion.ResponseTime r
                                             WHERE 
                                                 r.Node.Caption='{}' AND
-                                                DayDiff ( Date , GetDate ( ) ) < 7
+                                                DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < 7
                                             ORDER BY
                                                 r.DateTime
                                             """.format ( name )
