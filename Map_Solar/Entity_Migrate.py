@@ -943,7 +943,7 @@ class IntelligridMig  ( ):
                                                 Minute  ( Tolocal ( r.DateTime ) ) as Minute,
                                                 Second  ( Tolocal ( r.DateTime ) ) as Second,
                                                 WeekDay ( Tolocal ( r.DateTime ) ) as WeekDay,
-                                                r.Availability                     as Available,
+                                                r.Availability                     as Available
                                             FROM
                                                 Orion.ResponseTime r
                                             WHERE 
