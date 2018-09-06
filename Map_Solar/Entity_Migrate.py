@@ -487,15 +487,12 @@ class IntelligridMig  ( ):
             'Longitude' : longitude
         }
 
-        print ( latitude )
-        print ( longitude )
-
         # update the map point, otherwise create a new one
         try:
             uri = mapPointView [ 'results' ][ 0 ][ 'Uri' ]
             self._solarwinds.update ( uri , **props )
         except Exception:
-            self.createMapPoint ( group_id , latitude , longitude )
+            if latitude != None: self.createMapPoint ( group_id , latitude , longitude )
 
     def createFilter      ( self , filterType , nameInput , verbSearch , *entityList ):
 
