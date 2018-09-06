@@ -165,6 +165,8 @@ class IntelligridMig  ( ):
                 # determine if the nodes have a group in the base group
                 group_id                      = 0
                 legG_exists = sitG_exists     = False
+                lgroup      = sgroup          = ""
+                lID         = sID             = None
                 legG_exists, lgroup, lID      = self.getNodeContain ( legacy_loc , existingList ) 
                 if site_id != legacy_loc:
                     sitG_exists, sgroup, sID  = self.getNodeContain ( site_id    , existingList )
@@ -185,7 +187,7 @@ class IntelligridMig  ( ):
                 if   ( legG_exists and sitG_exists ) and ( lID == sID ):
                     existingList.remove (          lgroup           )
                     self.updateGroup    ( lID , loc_name , loc_name )
-                    group_id      = lID
+                    group_id = lID
 
                 elif ( legG_exists and sitG_exists ) and ( lID != sID ):
                     existingList.remove   (          lgroup           )
@@ -212,7 +214,6 @@ class IntelligridMig  ( ):
 
                 else:
                     group_id, group_uri = self.createGroup      ( loc_name , loc_name , dynamicQuery )
-                    print ( group_uri )
                     if group_id != None:  self.createDefinition ( 
                                                                     self._baseGroupID     , \
                                                                     [
@@ -723,8 +724,6 @@ class IntelligridMig  ( ):
             Returns        : None
         '''
 
-        print ( args )
-
         if len ( *args ) == 1:
             definition = 'AddDefinition'
             argument   = args [ 0 ]
@@ -967,8 +966,6 @@ class IntelligridMig  ( ):
                                              )
 
         result_list = node_group [ 'results' ]
-
-        # if there is container info available, see if there is one matching the existing groups
         if len ( result_list ) > 0:
             for group_holder in result_list:
                 if group_holder [ 'Name' ] in existingGroups: return True, group_holder [ 'Name' ], group_holder [ 'ID' ]
@@ -976,12 +973,11 @@ class IntelligridMig  ( ):
         # return that the group did not exist
         return False, "None", 0
 
-    def queryGroupInfo    ( self , name ):
+    def queryGroupInfo    ( self , name  , days ):
 
         # test function for querying data
         result = self._solarwinds.query (   """
                                             SELECT
-                                                Tolocal ( r.DateTime )             as EventDate,
                                                 Year    ( Tolocal ( r.DateTime ) ) as Year,
                                                 Month   ( Tolocal ( r.DateTime ) ) as Month,
                                                 Day     ( Tolocal ( r.DateTime ) ) as Day,
@@ -990,20 +986,15 @@ class IntelligridMig  ( ):
                                                 Second  ( Tolocal ( r.DateTime ) ) as Second,
                                                 WeekDay ( Tolocal ( r.DateTime ) ) as WeekDay,
                                                 r.Availability                     as Available,
-                                                GetUTCDate( )          as DateUTC,
-                                                GetDate ( )            as DateReg
                                             FROM
                                                 Orion.ResponseTime r
                                             WHERE 
                                                 r.Node.Caption='{}' AND
-                                                DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < 31
+                                                DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < {}
                                             ORDER BY
                                                 r.DateTime
-                                            """.format ( name )
+                                            """.format ( name , days )
                                         )
-                                        
-
-        #r.DateTime >= AddDate ( 'day' , -7 , getdate ( ) )
 
         return result
 
