@@ -957,22 +957,6 @@ class IntelligridMig  ( ):
 
         return result
 
-    def viewMapPoints ( self ):
-
-        mapPointView = self._solarwinds.query   ( 
-                            """
-                            SELECT
-                                Uri,
-                                DisplayName,
-                                Latitude,
-                                Longitude,
-                                AutoAdded
-                            FROM
-                                Orion.WorldMap.Point
-                            """
-                        )
-
-        print ( mapPointView )
 # class GroupInfo       ( )
 
 # class GroupMemberInfo ( )
