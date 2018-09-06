@@ -493,7 +493,6 @@ class IntelligridMig  ( ):
             uri = mapPointView [ 'results' ][ 0 ][ 'Uri' ]
             self._solarwinds.update ( uri , **props )
         except Exception:
-            print ( "Creating new map point for: {}".format ( group_id ) )
             self.createMapPoint ( group_id , latitude , longitude )
 
     def createFilter      ( self , filterType , nameInput , verbSearch , *entityList ):
