@@ -495,8 +495,8 @@ class IntelligridMig  ( ):
             # update the map point, otherwise create a new one
             try:
                 self._solarwinds.update ( uri , **props )
-
             except Exception:
+                print ( "Creating new map point for: {}".format ( group_id ) )
                 self.createMapPoint ( group_id , latitude , longitude )
 
     def createFilter      ( self , filterType , nameInput , verbSearch , *entityList ):
@@ -598,9 +598,6 @@ class IntelligridMig  ( ):
                 - True       : If successful
                 - Fale       : If failing
         '''
-
-        # test query --> don't delete for documentation
-        #query = self._solarwinds.query ( "SELECT N.Name, M.Latitude FROM Orion.Groups N INNER JOIN Orion.WorldMap.Point M ON N.ContainerID=M.InstanceID")
 
         # create the properties
         properties = {
@@ -963,6 +960,18 @@ class IntelligridMig  ( ):
 
         return result
 
+    def viewMapPoints ( self ):
+
+        mapPointView = self._solarwinds.query   ( 
+                            """
+                            SELECT
+                                Uri
+                            FROM
+                                Orion.WorldMap.Point
+                            """
+                        )
+
+        print ( mapPointView )
 # class GroupInfo       ( )
 
 # class GroupMemberInfo ( )
