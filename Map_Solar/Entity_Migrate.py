@@ -139,7 +139,7 @@ class IntelligridMig  ( ):
         existingList = self.getGroupList (    baseGroup    )
 
         # iterate through every row in workbook
-        for ROW in range ( 3 , self._intelligridSheet.max_row + 1 ):
+        for ROW in range ( 3 , 100 ):#self._intelligridSheet.max_row + 1 ):
 
             # get the column info from row
             legacy_loc = self._intelligridSheet.cell ( row=ROW , column=1  ).value
@@ -182,8 +182,6 @@ class IntelligridMig  ( ):
                                                         ] 
                                                     )
 
-                print ( dynamicQuery )
-
                 if   ( legG_exists and sitG_exists ) and ( lID == sID ):
                     existingList.remove (          lgroup           )
                     self.updateGroup    ( lID , loc_name , loc_name )
@@ -215,7 +213,7 @@ class IntelligridMig  ( ):
                 else:
                     group_id, group_uri = self.createGroup      ( loc_name , loc_name , dynamicQuery )
                     if group_id != None:  self.createDefinition ( 
-                                                                    self._baseGroupID     , \
+                                                                    self._baseGroupID , \
                                                                     [
                                                                         {
                                                                             'Name'      : loc_name,
@@ -633,35 +631,6 @@ class IntelligridMig  ( ):
         
             Returns           : None
         '''
-        
-        # prop_find = self._solarwinds.query (    
-        #                                         """
-        #                                         SELECT
-        #                                             N.Description
-        #                                         FROM
-        #                                             Orion.CustomProperty N
-        #                                         WHERE
-        #                                             N.Description='{}'
-        #                                         """.format ( descr )
-        #                                     )
-
-        # if len ( prop_find [ 'results' ] ) == 0:
-        #     try:
-        #         self._solarwinds.invoke (   
-        #                                     entity_type,
-        #                                     'CreateCustomProperty',
-        #                                     prop,
-        #                                     descr,
-        #                                     type_prop,
-        #                                     size,
-        #                                     #None for x in range ( 7 )
-        #                                 )
-        #     except Exception:
-        #         print ( "Unable to create custom property." )
-
-        # else:
-        #     print ( "Custom property already exists for: {}".format ( prop ) )
-
 
         # iterate through each property
         for prop, descr in properties.items ( ):
@@ -696,7 +665,6 @@ class IntelligridMig  ( ):
                                                 descr,
                                                 type_prop,
                                                 size,
-                                                #None for x in range ( 7 )
                                                 None,
                                                 None,
                                                 None,
@@ -731,6 +699,8 @@ class IntelligridMig  ( ):
             definition = 'AddDefinitions'
             argument   = args
 
+        print ( *argument )
+
         # update the container
         try:
             self._solarwinds.invoke ( 
@@ -741,7 +711,7 @@ class IntelligridMig  ( ):
             )
 
         except Exception:
-            print ( "Unable to add container: {}".format ( id_num ) )
+            print ( "Unable to add to container: {}".format ( id_num ) )
 
     def createGroup       ( self , group_name, description, *nodes ):
 
