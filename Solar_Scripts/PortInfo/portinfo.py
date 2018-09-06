@@ -47,7 +47,7 @@ class ExcelSheet ( ):
 									startRow if startRow < numRows else 0 , 
 									numRows if numRows < self.__workbook.max_row + 1
 								):
-			
+			sheet.
 	def writeToWorkbook  ( self ):
 
 		'''

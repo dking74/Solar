@@ -951,7 +951,7 @@ class IntelligridMig  ( ):
                                                 DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < {}
                                             ORDER BY
                                                 r.DateTime
-                                            """.format ( name , days )
+                                            """.format ( name )
                                         )
 
         return result
