@@ -934,6 +934,26 @@ class IntelligridMig  ( ):
     def queryGroupInfo    ( self , name  , days ):
 
         # test function for querying data
+        # result = self._solarwinds.query (   """
+        #                                     SELECT
+        #                                         Year    ( Tolocal ( r.DateTime ) ) as Year,
+        #                                         Month   ( Tolocal ( r.DateTime ) ) as Month,
+        #                                         Day     ( Tolocal ( r.DateTime ) ) as Day,
+        #                                         Hour    ( Tolocal ( r.DateTime ) ) as Hour,
+        #                                         Minute  ( Tolocal ( r.DateTime ) ) as Minute,
+        #                                         Second  ( Tolocal ( r.DateTime ) ) as Second,
+        #                                         WeekDay ( Tolocal ( r.DateTime ) ) as WeekDay,
+        #                                         r.Availability                     as Available
+        #                                     FROM
+        #                                         Orion.ResponseTime r
+        #                                     WHERE 
+        #                                         r.Node.Caption='{}' AND
+        #                                         DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < 30
+        #                                     ORDER BY
+        #                                         r.DateTime
+        #                                     """.format ( name )
+        #                                 )
+
         result = self._solarwinds.query (   """
                                             SELECT
                                                 Year    ( Tolocal ( r.DateTime ) ) as Year,
@@ -943,9 +963,9 @@ class IntelligridMig  ( ):
                                                 Minute  ( Tolocal ( r.DateTime ) ) as Minute,
                                                 Second  ( Tolocal ( r.DateTime ) ) as Second,
                                                 WeekDay ( Tolocal ( r.DateTime ) ) as WeekDay,
-                                                r.Availability                     as Available
+                                                r.Interfaces.PercentUtil           as Util
                                             FROM
-                                                Orion.ResponseTime r
+                                                Orion.Nodes r
                                             WHERE 
                                                 r.Node.Caption='{}' AND
                                                 DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < 30
