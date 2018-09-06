@@ -522,9 +522,10 @@ class IntelligridMig  ( ):
         for dictionary in entityList [ 0 ]:
             key        = list ( dictionary.keys   ( ) ) [ 0 ]
             value      = list ( dictionary.values ( ) ) [ 0 ]
-            if value != "": tempString = "{}({},'{}')".format ( verbSearch , key , value ) 
-            filterList.append ( tempString )
-        filterString = ' or '.join ( filterList )
+            if value != "": 
+                tempString = "{}({},'{}')".format ( verbSearch , key , value ) 
+                filterList.append ( tempString )
+        if filterList != []: filterString = ' or '.join ( filterList )
 
         # create the actual filter
         name        = nameInput
