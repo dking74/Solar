@@ -965,7 +965,7 @@ class IntelligridMig  ( ):
                                                 WeekDay ( Tolocal ( r.DateTime ) ) as WeekDay,
                                                 r.PercentUtil                      as Util
                                             FROM
-                                                Orion.InterfaceTraffic r
+                                                Orion.NPM.InterfaceTraffic r
                                             WHERE 
                                                 r.Interface.Node.Caption='{}' AND
                                                 DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < 30
