@@ -782,8 +782,7 @@ class IntelligridMig  ( ):
 
         # error check to make sure we can delete
         if container == "None":
-            return False
-
+            print ( "No container to delete" )
         else:
 
             # delete the item
@@ -793,11 +792,9 @@ class IntelligridMig  ( ):
                                         "DeleteContainer",
                                         container [ 'results' ][ 0 ][ 'ContainerID' ]
                                     )
-
+                print ( "Group: {} deleted!".format ( name ) )
             except Exception:
                 print ( "Unable to delete container: {}".format ( name ) )
-            
-            else: return True
 
     def deleteDefinition  ( self , id ):
 
