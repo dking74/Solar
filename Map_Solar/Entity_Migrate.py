@@ -139,7 +139,7 @@ class IntelligridMig  ( ):
         existingList = self.getGroupList (    baseGroup    )
 
         # iterate through every row in workbook
-        for ROW in range ( 3 , 100 ):#self._intelligridSheet.max_row + 1 ):
+        for ROW in range ( 3 , self._intelligridSheet.max_row + 1 ):
 
             # get the column info from row
             legacy_loc = self._intelligridSheet.cell ( row=ROW , column=1  ).value
@@ -699,8 +699,6 @@ class IntelligridMig  ( ):
         else:
             definition = 'AddDefinitions'
             argument   = args
-
-        print ( *argument )
 
         # update the container
         try:
