@@ -483,21 +483,18 @@ class IntelligridMig  ( ):
                                 PointId='{}'
                             """.format ( group_id )
                         )
+        props = {
+            'Latitude'  : latitude,
+            'Longitude' : longitude
+        }
 
-        if len ( mapPointView [ 'results' ] ) > 0:
+        # update the map point, otherwise create a new one
+        try:
             uri = mapPointView [ 'results' ][ 0 ][ 'Uri' ]
-
-            props = {
-                'Latitude'  : latitude,
-                'Longitude' : longitude
-            }
-
-            # update the map point, otherwise create a new one
-            try:
-                self._solarwinds.update ( uri , **props )
-            except Exception:
-                print ( "Creating new map point for: {}".format ( group_id ) )
-                self.createMapPoint ( group_id , latitude , longitude )
+            self._solarwinds.update ( uri , **props )
+        except Exception:
+            print ( "Creating new map point for: {}".format ( group_id ) )
+            self.createMapPoint ( group_id , latitude , longitude )
 
     def createFilter      ( self , filterType , nameInput , verbSearch , *entityList ):
 
