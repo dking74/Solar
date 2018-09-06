@@ -522,7 +522,7 @@ class IntelligridMig  ( ):
         for dictionary in entityList [ 0 ]:
             key        = list ( dictionary.keys   ( ) ) [ 0 ]
             value      = list ( dictionary.values ( ) ) [ 0 ]
-            tempString = "{}({},'{}')".format ( verbSearch , key , value ) 
+            if value != "": tempString = "{}({},'{}')".format ( verbSearch , key , value ) 
             filterList.append ( tempString )
         filterString = ' or '.join ( filterList )
 
