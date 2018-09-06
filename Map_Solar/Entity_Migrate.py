@@ -94,7 +94,7 @@ class IntelligridMig  ( ):
         '''
 
         # get top level group
-        self._baseGroupID = self.createGroup  ( baseGroup , "This is the base-level group" , [] )
+        self._baseGroupID, uri = self.createGroup  ( baseGroup , "This is the base-level group" , [] )
 
     def readWorkbook     ( self , baseGroup ):
 
