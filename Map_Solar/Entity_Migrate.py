@@ -948,7 +948,7 @@ class IntelligridMig  ( ):
                                                 Orion.ResponseTime r
                                             WHERE 
                                                 r.Node.Caption='{}' AND
-                                                DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < {}
+                                                DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < 30
                                             ORDER BY
                                                 r.DateTime
                                             """.format ( name )
