@@ -963,11 +963,11 @@ class IntelligridMig  ( ):
                                                 Minute  ( Tolocal ( r.DateTime ) ) as Minute,
                                                 Second  ( Tolocal ( r.DateTime ) ) as Second,
                                                 WeekDay ( Tolocal ( r.DateTime ) ) as WeekDay,
-                                                r.Interfaces.PercentUtil           as Util
+                                                r.PercentUtil                      as Util
                                             FROM
-                                                Orion.Nodes r
+                                                Orion.InterfaceTraffic r
                                             WHERE 
-                                                r.Node.Caption='{}' AND
+                                                r.Interface.Node.Caption='{}' AND
                                                 DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < 30
                                             ORDER BY
                                                 r.DateTime
