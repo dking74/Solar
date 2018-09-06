@@ -965,7 +965,11 @@ class IntelligridMig  ( ):
         mapPointView = self._solarwinds.query   ( 
                             """
                             SELECT
-                                Uri
+                                Uri,
+                                DisplayName,
+                                Latitude,
+                                Longitude,
+                                AutoAdded
                             FROM
                                 Orion.WorldMap.Point
                             """
