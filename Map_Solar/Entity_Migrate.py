@@ -419,7 +419,6 @@ class IntelligridMig  ( ):
 
                     )
         else:
-            print ( "There is no current definition to update. Creating..." )
             self.createDefinition ( id , definition [ 0 ] )
 
     def updateGroup       ( self , id , newName , newDescription ):
@@ -487,6 +486,9 @@ class IntelligridMig  ( ):
             'Latitude'  : latitude,
             'Longitude' : longitude
         }
+
+        print ( latitude )
+        print ( longitude )
 
         # update the map point, otherwise create a new one
         try:

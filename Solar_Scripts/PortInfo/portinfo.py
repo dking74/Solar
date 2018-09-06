@@ -24,7 +24,7 @@ class ExcelSheet ( ):
 		self.__workbookName = workbook
 		self.__workbook     = None
 
-	def readFromWorkbook ( self , numRows , numColumns ):
+	def readFromWorkbook ( self , numRows , numColumns , startRow=0 ):
 
 		'''
 		Method name: readFromWorkbook
@@ -34,13 +34,20 @@ class ExcelSheet ( ):
 		Parameters:
 			- numRows (integer): The number of rows to read
 			- numColumns (integer): The number of columns to read
+			- startRow (integer): The row to start reading from
 		
 		Returns: None
 		'''
 
-		self.__workbook  = load_workbook ( self.__workbookName )
-		sheet            = self.__workbook.active
+		if self.__workbook != None:
+			self.__workbook  = load_workbook ( self.__workbookName )
+		sheet = self.__workbook.active
 
+		for sheet_row in range  ( 
+									startRow if startRow < numRows else 0 , 
+									numRows if numRows < self.__workbook.max_row + 1
+								):
+			
 	def writeToWorkbook  ( self ):
 
 		'''
@@ -53,7 +60,7 @@ class ExcelSheet ( ):
 		Returns: None
 		'''
 
-	def removeSheetFromWorkbook ( self , sheetNum ):
+	def removeSheetFromWorkbook ( self , sheetName ):
 
 		'''
 		Method name: removeSheetFromWorkbook
@@ -61,12 +68,20 @@ class ExcelSheet ( ):
 		Method Purpose: To remove an inputted sheet from the inputted workbook
 		
 		Parameters:
-			- sheetNum (integer): The sheet number to remove
+			- sheetName (string): The name of the sheet to remove
 		
 		Returns: None
 		'''
 
-		self.__workbook  = load_workbook ( self.__workbookName )
+		if self.__workbook != None:
+			self.__workbook = load_workbook ( self.__workbookName )
+
+		try:
+			self.__workbook.remove ( 
+					self.__workbook.get_sheet_by_name ( sheetName )
+				)
+		except:
+			print ( "The sheet is unable to be deleted because the name is incorrect." )
 
 
 
