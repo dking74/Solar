@@ -220,8 +220,8 @@ class PortDetails ( ):
 														FROM
 															Orion.UDT.Port p
 														WHERE
-															p.Node.IPAddress='{}'
-														""".format ( self.__ipAddress )
+															p.Node.IPAddress='10.184.88.11'
+														"""
 													)
 
 		# portQueryResults = self.__solarwinds.query  ( 	"""
