@@ -8,7 +8,7 @@ class ExcelSheet ( ):
 	Class Purpose : To handle reading and writing to Excel spreadsheet
 	'''
 
-	def __init__ ( self , workbook ):
+	def __init__                ( self , workbook ):
 
 		'''
 		Method name: __init__
@@ -22,9 +22,9 @@ class ExcelSheet ( ):
 		'''
 
 		self.__workbookName = workbook
-		self.__workbook     = None
+		self.workbook       = None
 
-	def readFullWorkbook ( self , numRows , numColumns , startRow=1 ):
+	def readFullWorkbook        ( self , numRows , numColumns , sheet , startRow=1 ):
 
 		'''
 		Method name: readFromWorkbook
@@ -35,18 +35,18 @@ class ExcelSheet ( ):
 			- numRows (integer): The number of rows to read
 			- numColumns (integer): The number of columns to read
 			- startRow (integer): The row to start reading from
+			- sheet (unknown): The worksheet to read from
 		
 		Returns: A list of all data
 		'''
 
-		sheet = self._getWorkbookActiveSheet ( )
 		spreadsheet_data = []
 		for sheet_row in range ( *self.__getReadRange ( sheet.max_row , numRows , startRow ) ):
 			rowData = self.readRowFromWorkbook ( sheet_row , numColumns , sheet )
 			spreadsheet_data.append ( rowData )
 		return spreadsheet_data	
 
-	def readRowFromWorkbook ( self , rowNum , numColumns , sheet ):
+	def readRowFromWorkbook     ( self , rowNum , numColumns , sheet ):
 
 		'''
 		Method name: readRowFromWorkbook
@@ -63,7 +63,7 @@ class ExcelSheet ( ):
 
 		rowData = 	[ 
 						sheet.cell  ( 
-							row=rowNum if rowNum < sheet.max_row + 1 else sheet.max_row +1, \
+							row=rowNum if rowNum < sheet.max_row + 1 else sheet.max_row, \
 							column=column 
 						).value for column in range ( \
 							*self.__getReadRange ( sheet.max_column , numColumns ) 
@@ -71,7 +71,7 @@ class ExcelSheet ( ):
 					]
 		return rowData
 
-	def writeToWorkbook     ( self ):
+	def writeToWorkbook         ( self ):
 
 		'''
 		Method name: writeToWorkbook
@@ -96,11 +96,9 @@ class ExcelSheet ( ):
 		Returns: None
 		'''
 
-		self._openWorkbook ( )
 		try:
-			self.__workbook.remove ( 
-					self.__workbook.get_sheet_by_name ( sheetName )
-					)
+			self.openWorkbook    ( )
+			self.workbook.remove ( self.workbook.get_sheet_by_name ( sheetName ) )
 		except:
 			print ( "The sheet is unable to be deleted because the name is incorrect." )
 
@@ -128,7 +126,7 @@ class ExcelSheet ( ):
 			)
 		return cellRange
 
-	def _getWorkbookActiveSheet ( self ):
+	def getWorkbookActiveSheet  ( self ):
 
 		'''
 		Method name: __getWorkbookActiveSheet
@@ -140,10 +138,10 @@ class ExcelSheet ( ):
 		Returns: The active sheet of the workbook
 		'''
 		
-		self._openWorkbook ( )
-		return self.__workbook.active
+		self.openWorkbook ( )
+		return self.workbook.active
 
-	def _openWorkbook           ( self ):
+	def openWorkbook            ( self ):
 
 		'''
 		Method name: _openWorkbook
@@ -155,5 +153,5 @@ class ExcelSheet ( ):
 		Returns: None
 		'''
 
-		if self.__workbook == None: 
-			self.__workbook  = load_workbook ( self.__workbookName )
+		if self.workbook == None: 
+			self.workbook = load_workbook ( self.__workbookName )
