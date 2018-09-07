@@ -43,11 +43,11 @@ class ExcelSheet ( ):
 			self.__workbook  = load_workbook ( self.__workbookName )
 		sheet = self.__workbook.active
 
-		for sheet_row in range  ( self.__findReadRange ( sheet.max_row , numRows , startRow ) ):
+		for sheet_row in range ( *self.__findReadRange ( sheet.max_row , numRows , startRow ) ):
 			row_vals =  [ 
 							sheet.cell ( row=sheet_row , column=col ).value \
 							for col in range ( \
-								self.__findReadRange ( sheet.max_column , col ) 
+								*self.__findReadRange ( sheet.max_column , col ) 
 							) 
 						]
 			print ( row_vals )
