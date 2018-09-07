@@ -215,7 +215,9 @@ class PortDetails ( ):
 															e.Ports.Port.Name,
 															e.Ports.Port.PortDescription,
 															e.Ports.ConnectionType,
-															e.MACAddress
+															e.MACAddress,
+															e.Ports.Port.Speed,
+															e.Ports.Port.Duplex
 														FROM
 															Orion.UDT.Endpoint e
 														WHERE
