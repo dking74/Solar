@@ -1,5 +1,6 @@
 from openpyxl import Workbook , load_workbook
 from orionsdk import SwisClient
+import requests
 
 class ExcelSheet ( ):
 
@@ -187,6 +188,12 @@ class PortDetails ( ):
 		Returns: None
 		'''
 
+		# the server is unverified --> allow without warnings
+        verify = False
+        if not verify:
+            from requests.packages.urllib3.exceptions import InsecureRequestWarning
+            requests.packages.urllib3.disable_warnings ( InsecureRequestWarning )
+
 		self.__ipAddress  = ipAddress
 		self.__solarwinds = SwisClient ( "solarwinds.ameren.com" , username , password )
 
@@ -202,6 +209,8 @@ class PortDetails ( ):
 		Returns: A dictionary of the details of the query if it is found
 				 'None' if results are not found
 		'''
+
+		print ( self.__ipAddress )
 
 		portQueryResults = self.__solarwinds.query  ( 	"""
 														SELECT
