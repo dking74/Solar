@@ -139,7 +139,7 @@ class IntelligridMig  ( ):
         existingList = self.getGroupList (    baseGroup    )
 
         # iterate through every row in workbook
-        for ROW in range ( 3 , self._intelligridSheet.max_row + 1 ):
+        for ROW in range ( 1547 , 1548 ):#3 , self._intelligridSheet.max_row + 1 ):
 
             # get the column info from row
             legacy_loc = self._intelligridSheet.cell ( row=ROW , column=1  ).value
@@ -948,10 +948,10 @@ class IntelligridMig  ( ):
                                                 Orion.ResponseTime r
                                             WHERE 
                                                 r.Node.Caption='{}' AND
-                                                DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < 30
+                                                DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < {}
                                             ORDER BY
                                                 r.DateTime
-                                            """.format ( name )
+                                            """.format ( name , days )
                                         )
 
         # result = self._solarwinds.query (   """
