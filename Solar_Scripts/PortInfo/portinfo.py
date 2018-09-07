@@ -154,6 +154,6 @@ class ExcelSheet ( ):
 
 		if self.__workbook == None: 
 			try:
-				self.__workbook = load_workbook ( "theking7.txt" )#self.__workbookName )
+				self.__workbook = load_workbook ( workbookName )
 			except FileNotFoundError:
 				raise Exception ( "The file name entered could not be found in the file system." )
