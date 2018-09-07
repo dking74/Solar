@@ -43,8 +43,8 @@ class ExcelSheet ( ):
 		sheet = self.__workbook.active
 
 		for sheet_row in range  ( 
-									startRow    if startRow < numRows                     else 0 , 
-									numRows + 1 if numRows  < self.__workbook.max_row + 1 else self.__workbook.max_row + 1
+									startRow    if startRow < numRows           else 0 , 
+									numRows + 1 if numRows  < sheet.max_row + 1 else sheet.max_row + 1
 								):
 			row_vals = [ sheet.cell ( row=sheet_row , col=col ).value for col in range ( 1 , numColumns + 1 ) ]
 			print ( row_vals )
