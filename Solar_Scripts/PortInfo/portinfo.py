@@ -214,7 +214,7 @@ class PortDetails ( ):
 														SELECT
 															e.Ports.Port.Name,
 															e.Ports.Port.PortDescription,
-															e.Ports.DisplayName
+															e.Ports.ConnectionType
 														FROM
 															Orion.UDT.Endpoint e
 														WHERE
