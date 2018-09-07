@@ -212,25 +212,13 @@ class PortDetails ( ):
 
 		portQueryResults = self.__solarwinds.query  ( 	"""
 														SELECT
-															e.MACAddress,
-															e.ConnectedTo,
-															e.Node.Ports.Speed
+															e.Ports.Port.Name,
+															e.Ports.Port.MACAddress
 														FROM
-															Orion.UDT.AllEndpoints e
+															Orion.UDT.Endpoint e
 														WHERE
-															e.IPAddress='10.177.216.5' and
-															e.ConnectionTypeName='Direct'
+															e.IPAddresses.IPAddress='10.177.216.5'
 														"""
 													)
-
-		# portQueryResults = self.__solarwinds.query  ( 	"""
-		# 												SELECT
-		# 													p.NodeID
-		# 												FROM
-		# 													Orion.Nodes p
-		# 												WHERE
-		# 													p.IPAddress='{}'
-		# 												""".format ( self.__ipAddress )
-		# 											)
 
 		return portQueryResults [ 'results' ]
