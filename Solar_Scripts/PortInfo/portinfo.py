@@ -188,11 +188,11 @@ class PortDetails ( ):
 		Returns: None
 		'''
 
-		# the server is unverified --> allow without warnings
-        verify = False
-        if not verify:
-            from requests.packages.urllib3.exceptions import InsecureRequestWarning
-            requests.packages.urllib3.disable_warnings ( InsecureRequestWarning )
+		# the server is unverified --> allow without warning
+		verify = False
+		if not verify:
+			from requests.packages.urllib3.exceptions import InsecureRequestWarning
+			requests.packages.urllib3.disable_warnings ( InsecureRequestWarning )
 
 		self.__ipAddress  = ipAddress
 		self.__solarwinds = SwisClient ( "solarwinds.ameren.com" , username , password )
