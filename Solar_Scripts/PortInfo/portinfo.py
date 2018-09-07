@@ -1,4 +1,5 @@
 from openpyxl import Workbook , load_workbook
+from orionsdk import SwisClient
 
 class ExcelSheet ( ):
 
@@ -160,3 +161,58 @@ class ExcelSheet ( ):
 			self.__workbook = load_workbook ( workbookName )
 		except FileNotFoundError:
 			raise Exception ( "The file name entered could not be found in the file system." )
+
+
+class PortDetails ( ):
+
+	'''
+	Class name: PortDetails
+	
+	Class Purpose: To obtain individual port details from Solarwinds
+	'''
+
+	def __init__ ( self , ipAddress , username , password ):
+
+		'''
+		Method name: __init__
+		
+		Method Purpose: To initialize a port detail instance
+		
+		Parameters: 
+			- ipAddress (string): The ip address the port is bound to
+			- username (string): The username of the user in solarwinds
+			- password (string): The password of the user in solarwinds
+		
+		Returns: None
+		'''
+
+		self.__ipAddress  = ipAddress
+		self.__solarwinds = SwisClient ( "solarwinds.ameren.com" , username , password )
+
+	def getPortInfo ( self ):
+		
+		'''
+		Method name: getPortInfo
+		
+		Method Purpose: To get the important port information from Solarwinds
+		
+		Parameters: None
+		
+		Returns: A dictionary of the details of the query if it is found
+				 'None' if results are not found
+		'''
+
+		portQueryResults = self.__solarwinds.query  ( 	"""
+														SELECT
+															p.PortDescription,
+															p.PortType,
+															p.PortID,
+															p.Speed,
+															p.Duplex
+														FROM
+															Orion.UDT.Port p
+														WHERE
+															p.Node.IPAddress='{}'
+														""".format ( self.__ipAddress )
+													)
+		return portQueryResults [ 'results' ]
