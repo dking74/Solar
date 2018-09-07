@@ -39,8 +39,7 @@ class ExcelSheet ( ):
 		Returns: None
 		'''
 
-		if self.__workbook != None:
-			self.__workbook  = load_workbook ( self.__workbookName )
+		if self.__workbook == None: self.__workbook  = load_workbook ( self.__workbookName )
 		sheet = self.__workbook.active
 
 		for sheet_row in range  ( 
@@ -49,7 +48,7 @@ class ExcelSheet ( ):
 								):
 			row_vals = [ sheet.cell ( row=sheet_row , col=col ).value for col in range ( 1 , numColumns + 1 ) ]
 			print ( row_vals )
-			
+
 	def writeToWorkbook  ( self ):
 
 		'''
@@ -75,13 +74,11 @@ class ExcelSheet ( ):
 		Returns: None
 		'''
 
-		if self.__workbook != None:
-			self.__workbook = load_workbook ( self.__workbookName )
-
+		if self.__workbook == None: self.__workbook = load_workbook ( self.__workbookName )
 		try:
 			self.__workbook.remove ( 
 					self.__workbook.get_sheet_by_name ( sheetName )
-				)
+					)
 		except:
 			print ( "The sheet is unable to be deleted because the name is incorrect." )
 
