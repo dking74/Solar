@@ -36,21 +36,24 @@ class ExcelSheet ( ):
 			- numColumns (integer): The number of columns to read
 			- startRow (integer): The row to start reading from
 		
-		Returns: None
+		Returns: A list of all data
 		'''
 
 		if self.__workbook == None: 
 			self.__workbook  = load_workbook ( self.__workbookName )
 		sheet = self.__workbook.active
 
+		spreadsheet_data = []
 		for sheet_row in range ( *self.__findReadRange ( sheet.max_row , numRows , startRow ) ):
-			row_vals =  [ 
+			spreadsheet_data.append (
+						[ 
 							sheet.cell ( row=sheet_row , column=column ).value \
 							for column in range ( \
 								*self.__findReadRange ( sheet.max_column , numColumns ) 
 							) 
 						]
-			print ( row_vals )
+					)
+		return spreadsheet_data		
 
 	def writeToWorkbook  ( self ):
 
