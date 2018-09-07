@@ -212,16 +212,12 @@ class PortDetails ( ):
 
 		portQueryResults = self.__solarwinds.query  ( 	"""
 														SELECT
-															p.PortDescription,
-															p.PortType,
-															p.PortID,
-															p.Speed,
-															p.Duplex
+															e.MACAddress
 														FROM
-															Orion.UDT.Port p
+															Orion.UDT.AllEndpoints e
 														WHERE
-															p.IPAddresses.IPAddress='10.177.216.5' AND
-															p.Endpoints.ConnectionType=0
+															e.IPAddress='10.177.216.5' and
+															e.ConnectionTypeName='Direct'
 														"""
 													)
 
