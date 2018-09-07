@@ -220,7 +220,8 @@ class PortDetails ( ):
 														FROM
 															Orion.UDT.Port p
 														WHERE
-															p.IPAddresses.IPAddress='10.177.216.5'
+															p.IPAddresses.IPAddress='10.177.216.5' AND
+															p.Endpoints.ConnectionType=0
 														"""
 													)
 
