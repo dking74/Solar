@@ -210,19 +210,28 @@ class PortDetails ( ):
 				 'None' if results are not found
 		'''
 
-		print ( self.__ipAddress )
-
+		# portQueryResults = self.__solarwinds.query  ( 	"""
+		# 												SELECT
+		# 													p.PortDescription,
+		# 													p.PortType,
+		# 													p.PortID,
+		# 													p.Speed,
+		# 													p.Duplex
+		# 												FROM
+		# 													Orion.UDT.Port p
+		# 												WHERE
+		# 													p.Node.IPAddress='{}'
+		# 												""".format ( self.__ipAddress )
+		# 											)
+	
 		portQueryResults = self.__solarwinds.query  ( 	"""
 														SELECT
-															p.PortDescription,
-															p.PortType,
-															p.PortID,
-															p.Speed,
-															p.Duplex
+															p.NodeID
 														FROM
-															Orion.UDT.Port p
+															Orion.Nodes p 
 														WHERE
-															p.Node.IPAddress='10.187.71.116'
+															p.IPAddress='{}'
 														""".format ( self.__ipAddress )
 													)
+	
 		return portQueryResults [ 'results' ]
