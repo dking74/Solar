@@ -213,6 +213,7 @@ class PortDetails ( ):
 		portQueryResults = self.__solarwinds.query  ( 	"""
 														SELECT
 															e.Ports.Port.Name,
+															e.Ports.Port.PortDescription,
 															e.Ports.Port.MACAddress
 														FROM
 															Orion.UDT.Endpoint e
