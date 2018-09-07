@@ -21,8 +21,7 @@ class ExcelSheet ( ):
 		Returns: None
 		'''
 
-		self.__workbookName = workbook
-		self.__workbook     = None
+		self.__workbook     = self.__openWorkbook ( workbook )
 
 	def readFullWorkbook        ( self , numRows , numColumns , sheet , startRow=1 ):
 
@@ -137,21 +136,24 @@ class ExcelSheet ( ):
 		
 		Returns: The active sheet of the workbook
 		'''
-		
-		self.__openWorkbook ( )
+
 		return self.__workbook.active
 
-	def __openWorkbook          ( self ):
+	def __openWorkbook          ( self , workbookName ):
 
 		'''
 		Method name: _openWorkbook
 		
 		Method Purpose: To open the workbook if it is not already
 		
-		Parameters: None
+		Parameters:
+			- workbookName (string): The name of the workbook to open
 		
 		Returns: None
 		'''
 
 		if self.__workbook == None: 
-			self.__workbook = load_workbook ( "theking7.xlsx" )#self.__workbookName )
+			try:
+				self.__workbook = load_workbook ( "theking7.txt" )#self.__workbookName )
+			except FileNotFoundError:
+				raise Exception ( "The file name entered could not be found in the file system." )
