@@ -24,7 +24,7 @@ class ExcelSheet ( ):
 		self.__workbookName = workbook
 		self.__workbook     = None
 
-	def readFromWorkbook ( self , numRows , numColumns , startRow=0 ):
+	def readFromWorkbook ( self , numRows , numColumns , startRow=1 ):
 
 		'''
 		Method name: readFromWorkbook
@@ -39,14 +39,15 @@ class ExcelSheet ( ):
 		Returns: None
 		'''
 
-		if self.__workbook == None: self.__workbook  = load_workbook ( self.__workbookName )
+		if self.__workbook == None: 
+			self.__workbook  = load_workbook ( self.__workbookName )
 		sheet = self.__workbook.active
 
 		for sheet_row in range  ( 
-									startRow    if startRow < numRows           else 0 , 
+									startRow    if startRow < numRows and startRow > 0 else 1 , 
 									numRows + 1 if numRows  < sheet.max_row + 1 else sheet.max_row + 1
 								):
-			row_vals = [ sheet.cell ( row=sheet_row , col=col ).value for col in range ( 1 , numColumns + 1 ) ]
+			row_vals = [ sheet.cell ( row=sheet_row , column=col ).value for col in range ( 1 , numColumns + 1 ) ]
 			print ( row_vals )
 
 	def writeToWorkbook  ( self ):
