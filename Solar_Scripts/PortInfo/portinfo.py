@@ -219,7 +219,7 @@ class PortDetails ( ):
 															e.Ports.Port.Speed,
 															e.Ports.Port.Duplex,
 															e.DisplayName,
-															e.Ports.Port.Name
+															e.Ports.Port.Node.Caption
 														FROM
 															Orion.UDT.Endpoint e
 														WHERE
