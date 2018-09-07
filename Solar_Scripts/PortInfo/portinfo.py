@@ -220,7 +220,7 @@ class PortDetails ( ):
 														FROM
 															Orion.UDT.Port p
 														WHERE
-															p.Node.IPAddress='10.184.88.11'
+															p.NodeID=1588
 														"""
 													)
 
