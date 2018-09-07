@@ -215,7 +215,7 @@ class PortDetails ( ):
 															e.MACAddress,
 															e.ConnectedTo,
 															e.Node.Ports.Speed,
-															e.Node.Ports.Duplex,
+															e.Node.Ports.Duplex
 														FROM
 															Orion.UDT.AllEndpoints e
 														WHERE
