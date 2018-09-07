@@ -62,8 +62,10 @@ class ExcelSheet ( ):
 		'''	
 
 		rowData = 	[ 
-						sheet.cell ( row=rowNum , column=column ).value \
-						for column in range ( \
+						sheet.cell  ( 
+							row=rowNum if rowNum < sheet.max_row + 1 else sheet.max_row +1, \
+							column=column 
+						).value for column in range ( \
 							*self.__getReadRange ( sheet.max_column , numColumns ) 
 						)
 					]
