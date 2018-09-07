@@ -45,9 +45,9 @@ class ExcelSheet ( ):
 
 		for sheet_row in range ( *self.__findReadRange ( sheet.max_row , numRows , startRow ) ):
 			row_vals =  [ 
-							sheet.cell ( row=sheet_row , column=col ).value \
-							for col in range ( \
-								*self.__findReadRange ( sheet.max_column , col ) 
+							sheet.cell ( row=sheet_row , column=column ).value \
+							for column in range ( \
+								*self.__findReadRange ( sheet.max_column , numColumns ) 
 							) 
 						]
 			print ( row_vals )
