@@ -158,10 +158,11 @@ class ExcelSheet ( ):
 		'''
 
 		try:
-			self.__workbook = load_workbook ( workbookName )
+			workbook = load_workbook ( workbookName )
 		except FileNotFoundError:
 			raise Exception ( "The file name entered could not be found in the file system." )
-
+		else:
+			return workbook
 
 class PortDetails ( ):
 
