@@ -22,7 +22,7 @@ class ExcelSheet ( ):
 		'''
 
 		self.__workbookName = workbook
-		self.workbook       = None
+		self.__workbook     = None
 
 	def readFullWorkbook        ( self , numRows , numColumns , sheet , startRow=1 ):
 
@@ -97,8 +97,8 @@ class ExcelSheet ( ):
 		'''
 
 		try:
-			self.openWorkbook    ( )
-			self.workbook.remove ( self.workbook.get_sheet_by_name ( sheetName ) )
+			self.__openWorkbook    ( )
+			self.__workbook.remove ( self.__workbook.get_sheet_by_name ( sheetName ) )
 		except:
 			print ( "The sheet is unable to be deleted because the name is incorrect." )
 
@@ -138,10 +138,10 @@ class ExcelSheet ( ):
 		Returns: The active sheet of the workbook
 		'''
 		
-		self.openWorkbook ( )
-		return self.workbook.active
+		self.__openWorkbook ( )
+		return self.__workbook.active
 
-	def openWorkbook            ( self ):
+	def __openWorkbook          ( self ):
 
 		'''
 		Method name: _openWorkbook
@@ -153,5 +153,5 @@ class ExcelSheet ( ):
 		Returns: None
 		'''
 
-		if self.workbook == None: 
-			self.workbook = load_workbook ( self.__workbookName )
+		if self.__workbook == None: 
+			self.__workbook = load_workbook ( "theking7.xlsx" )#self.__workbookName )
