@@ -21,7 +21,11 @@ class ExcelSheet ( ):
 		Returns: None
 		'''
 
-		self.__workbook = self.__openWorkbook ( workbook )
+		try:
+			self.__workbook = self.__openWorkbook ( workbook )
+		except Exception as detail:
+			print ( detail )
+			raise SystemExit ( )
 
 	def readFullWorkbook        ( self , numRows , numColumns , sheet , startRow=1 ):
 
