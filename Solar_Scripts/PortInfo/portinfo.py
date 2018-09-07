@@ -21,7 +21,7 @@ class ExcelSheet ( ):
 		Returns: None
 		'''
 
-		self.__workbook     = self.__openWorkbook ( workbook )
+		self.__workbook = self.__openWorkbook ( workbook )
 
 	def readFullWorkbook        ( self , numRows , numColumns , sheet , startRow=1 ):
 
@@ -152,8 +152,7 @@ class ExcelSheet ( ):
 		Returns: None
 		'''
 
-		if self.__workbook == None: 
-			try:
-				self.__workbook = load_workbook ( workbookName )
-			except FileNotFoundError:
-				raise Exception ( "The file name entered could not be found in the file system." )
+		try:
+			self.__workbook = load_workbook ( workbookName )
+		except FileNotFoundError:
+			raise Exception ( "The file name entered could not be found in the file system." )
