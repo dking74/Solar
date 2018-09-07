@@ -43,11 +43,13 @@ class ExcelSheet ( ):
 			self.__workbook  = load_workbook ( self.__workbookName )
 		sheet = self.__workbook.active
 
-		for sheet_row in range  ( 
-									startRow    if startRow < numRows and startRow > 0 else 1 , 
-									numRows + 1 if numRows  < sheet.max_row + 1 else sheet.max_row + 1
-								):
-			row_vals = [ sheet.cell ( row=sheet_row , column=col ).value for col in range ( 1 , numColumns + 1 ) ]
+		for sheet_row in range  ( self.__findReadRange ( sheet.max_rows , numRows , startRow ) ):
+			row_vals =  [ 
+							sheet.cell ( row=sheet_row , column=col ).value \
+							for col in range ( \
+								self.__findReadRange ( sheet.max_columns , col ) 
+							) 
+						]
 			print ( row_vals )
 
 	def writeToWorkbook  ( self ):
@@ -83,5 +85,27 @@ class ExcelSheet ( ):
 		except:
 			print ( "The sheet is unable to be deleted because the name is incorrect." )
 
+	def __findReadRange ( self , maxCell , inputCell , startCell=1 ):
 
+		'''
+		Method name: __findReadRange
+		
+		Method Purpose: To find the range being read from Excel Worksheet;
+						either the row or column range
+		
+		Parameters:
+			- maxCell (integer): The max number of cells that can be read
+			- startCell (integer): The starting cell (row or column)
+			- inputCell (integer): The user inputted range to be read
+		
+		Returns: A tuple containing the read range
+		'''
+
+		cellRange = ( 
+				startCell    if startCell < inputCell and startCell > 0
+							else 1 , 
+				inputCell + 1 if inputCell  < maxCell + 1 and inputCell < maxCell + 1 \
+							else maxCell + 1
+			)
+		return cellRange
 
