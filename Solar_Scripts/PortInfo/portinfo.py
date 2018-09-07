@@ -222,7 +222,7 @@ class PortDetails ( ):
 														FROM
 															Orion.UDT.Port p
 														WHERE
-															p.Node.IPAddress='{}'
+															p.Node.IPAddress='10.187.71.116'
 														""".format ( self.__ipAddress )
 													)
 		return portQueryResults [ 'results' ]
