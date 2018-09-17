@@ -1,6 +1,8 @@
 from openpyxl import Workbook , load_workbook
+from openpyxl.styles import Alignment
+from openpyxl.utils import get_column_letter
 from orionsdk import SwisClient
-import requests
+import requests , abc
 
 class ExcelSheet ( ):
 
@@ -22,12 +24,16 @@ class ExcelSheet ( ):
 
 		Returns: None
 		'''
-
+		
+		self.workbookName = workbook
 		try:
-			self.__workbook = self.__openWorkbook ( workbook )
+			self.workbook = self.openWorkbook ( workbook )
 		except Exception as detail:
-			print ( detail )
-			raise SystemExit ( )
+			self.workbook = Workbook ( workbook )
+			
+		self.worksheet = self.getWorkbookActiveSheet ( )
+		self.columns   = self.worksheet.max_column
+		self.rows      = self.worksheet.max_row
 
 	def readFullWorkbook        ( self , numRows , numColumns , sheet , startRow=1 ):
 
@@ -76,18 +82,43 @@ class ExcelSheet ( ):
 					]
 		return rowData
 
-	def writeToWorkbook         ( self ):
+	def writeToWorkbook         ( self , sheet , row , rowData , columnStart=0  ):
 
 		'''
 		Method name: writeToWorkbook
 
 		Method Purpose: To write to the inputted workbook
 
-		Parameters: None
+		Parameters: 
+			- sheet (WorkSheet): The worksheet we are writing to
+			- row (integer): The row number to write to
+			- rowData (list): A list of data for row
+			- columnStart (integer): The starting spot to place the column
 
 		Returns: None
 		'''
 
+		colNum = columnStart
+		for counter , data in enumerate ( rowData ):
+			sheet.cell ( row=row , column=colNum ).value = data
+			sheet.cell ( row=row , column=colNum ).alignment = Alignment ( wrap_text = False )
+			colNum = colNum + 1	
+		self.saveWorkbook ( )
+		
+	def saveWorkbook            ( self ):
+	
+		'''
+		Method name: saveWorkBook
+
+		Method Purpose: To save the workbook
+
+		Parameters: None
+
+		Returns: None
+		'''
+	
+		self.workbook.save ( self.workbookName )
+		
 	def removeSheetFromWorkbook ( self , sheetName ):
 
 		'''
@@ -102,8 +133,7 @@ class ExcelSheet ( ):
 		'''
 
 		try:
-			self.__openWorkbook    ( )
-			self.__workbook.remove ( self.__workbook.get_sheet_by_name ( sheetName ) )
+			self.workbook.remove ( self.workbook.get_sheet_by_name ( sheetName ) )
 		except:
 			print ( "The sheet is unable to be deleted because the name is incorrect." )
 
@@ -124,7 +154,7 @@ class ExcelSheet ( ):
 		'''
 
 		cellRange = (
-				startCell    if startCell < inputCell and startCell > 0
+				startCell   if startCell < inputCell and startCell > 0
 							else 1 ,
 				inputCell + 1 if inputCell  < maxCell + 1 and inputCell < maxCell + 1 \
 							else maxCell + 1
@@ -143,9 +173,9 @@ class ExcelSheet ( ):
 		Returns: The active sheet of the workbook
 		'''
 
-		return self.__workbook.active
+		return self.workbook.active
 
-	def __openWorkbook          ( self , workbookName ):
+	def openWorkbook          ( self , workbookName ):
 
 		'''
 		Method name: _openWorkbook
@@ -164,16 +194,115 @@ class ExcelSheet ( ):
 			raise Exception ( "The file name entered could not be found in the file system." )
 		else:
 			return workbook
+			
+	def setRowHeight ( self , rowNum , height , worksheet ):
+	
+		'''
+		Method name: setRowHeight
 
-class PortDetails ( ):
+		Method Purpose: To set the row height
+
+		Parameters:
+			- rowNum (integer):The row we are adjusting
+			- height (integer): The new height of the rwo
+			- worksheet (worksheet): The worksheet we are adjusting
+
+		Returns: None
+		'''
+		
+		worksheet.row_dimensions [ rowNum ].height = height
+	
+	def setColumnWidth ( self , colNum , width , worksheet ):
+	
+		'''
+		Method name: setColumnWidth
+
+		Method Purpose: To set the column width
+
+		Parameters:
+			- colNum (integer): The column we are adjusting
+			- width (integer): The new width of the column
+			- worksheet (worksheet): The worksheet we are adjusting
+
+		Returns: None
+		'''
+		
+		worksheet.column_dimensions [ get_column_letter ( colNum ) ].width = width
+		
+	def getRowHeight ( self , rowNum , worksheet ):
+	
+		'''
+		Method name: setRowHeight
+
+		Method Purpose: To set the row height
+
+		Parameters:
+			- rowNum (integer):The row we are adjusting
+			- worksheet (worksheet): The worksheet we are adjusting
+
+		Returns: None
+		'''
+		
+		height = worksheet.row_dimensions [ rowNum ].height
+		return height
+		
+	def getColumnWidth ( self , colNum , worksheet ):
+	
+		'''
+		Method name: setColumnWidth
+
+		Method Purpose: To set the column width
+
+		Parameters:
+			- colNum (integer): The column we are adjusting
+			- worksheet (worksheet): The worksheet we are adjusting
+
+		Returns: None
+		'''
+
+		width = worksheet.column_dimensions [ colNum ].width
+		return width
+
+class SolarwindsEntity ( abc.ABC ):
 
 	'''
-	Class name: PortDetails
+	Class name: SolarwindsEntity
+	
+	Class Purpose: To serve as base class for all Solarwinds entities
+	'''
+		
+	def __init__ ( self , domain , username , password ):
+	
+		'''
+		Method name: __init__
+
+		Method Purpose: To start a solarwinds instance
+
+		Parameters:
+			- domain (string): The domain to log into
+			- username (string): The username to log into the system
+			- password (string): The password for the associated username
+
+		Returns: None
+		'''
+		
+		# the server is unverified --> allow without warning
+		verify = False
+		if not verify:
+			from requests.packages.urllib3.exceptions import InsecureRequestWarning
+			requests.packages.urllib3.disable_warnings ( InsecureRequestWarning )
+		
+		self._solarwinds = SwisClient ( domain , username , password )
+		
+class PortEntity ( SolarwindsEntity ):
+
+	'''
+	Class name: PortEntity
 
 	Class Purpose: To obtain individual port details from Solarwinds
 	'''
 
-	def __init__ ( self , ipAddress , username , password ):
+	def __init__ ( self , domain , username , password , ipAddress , nodeName=None ):
 
 		'''
 		Method name: __init__
@@ -188,15 +317,10 @@ class PortDetails ( ):
 		Returns: None
 		'''
 
-		# the server is unverified --> allow without warning
-		verify = False
-		if not verify:
-			from requests.packages.urllib3.exceptions import InsecureRequestWarning
-			requests.packages.urllib3.disable_warnings ( InsecureRequestWarning )
-
-		self.__ipAddress  = ipAddress
-		self.__solarwinds = SwisClient ( "solarwinds.ameren.com" , username , password )
-
+		super ( ).__init__ ( domain , username , password )
+		self.__ipAddress = ipAddress
+		self.__nodeName  = nodeName
+	
 	def getPortInfo ( self ):
 
 		'''
@@ -209,22 +333,22 @@ class PortDetails ( ):
 		Returns: A dictionary of the details of the query if it is found
 				 'None' if results are not found
 		'''
-
-		portQueryResults = self.__solarwinds.query  ( 	"""
+		
+		searchCondition = "e.IPAddresses.IPAddress='{}'".format ( self.__ipAddress ) \
+						  if self.__nodeName == None else \
+						  "(e.IPAddresses.IPAddress='{}' and e.Ports.Port.Node.Caption='{}')".format ( self.__ipAddress , self.__nodeName )
+		portQueryResults = self._solarwinds.query  ( 	"""
 														SELECT
 															e.Ports.Port.Name,
 															e.Ports.Port.PortDescription,
-															e.Ports.ConnectionType,
-															e.MACAddress,
 															e.Ports.Port.Speed,
 															e.Ports.Port.Duplex,
-															e.DisplayName,
 															e.Ports.Port.Node.Caption
 														FROM
 															Orion.UDT.Endpoint e
 														WHERE
-															e.IPAddresses.IPAddress='10.177.216.5'
-														"""
+															e.Ports.ConnectionType=1 and {}
+														""".format ( searchCondition )
 													)
 
 		return portQueryResults [ 'results' ]
