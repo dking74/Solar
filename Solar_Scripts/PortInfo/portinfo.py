@@ -337,7 +337,8 @@ class PortEntity ( SolarwindsEntity ):
 		searchCondition = "e.IPAddresses.IPAddress='{}'".format ( self.__ipAddress ) \
 						  if self.__nodeName == None else \
 						  "(e.IPAddresses.IPAddress='{}' and e.Ports.Port.Node.Caption='{}')".format ( self.__ipAddress , self.__nodeName )
-		portQueryResults = self._solarwinds.query  ( 	"""
+		portQueryResults = self._solarwinds.query  ( 	
+														"""
 														SELECT
 															e.Ports.Port.Name,
 															e.Ports.Port.PortDescription,
