@@ -936,43 +936,23 @@ class IntelligridMig  ( ):
         # test function for querying data
         result = self._solarwinds.query (   """
                                             SELECT
-                                                Year    ( Tolocal ( r.DateTime ) ) as Year,
-                                                Month   ( Tolocal ( r.DateTime ) ) as Month,
-                                                Day     ( Tolocal ( r.DateTime ) ) as Day,
-                                                Hour    ( Tolocal ( r.DateTime ) ) as Hour,
-                                                Minute  ( Tolocal ( r.DateTime ) ) as Minute,
-                                                Second  ( Tolocal ( r.DateTime ) ) as Second,
-                                                WeekDay ( Tolocal ( r.DateTime ) ) as WeekDay,
-                                                r.Availability                     as Available
+                                                Year    ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as Year,
+                                                Month   ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as Month,
+                                                Day     ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as Day,
+                                                Hour    ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as Hour,
+                                                Minute  ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as Minute,
+                                                Second  ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as Second,
+                                                WeekDay ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as WeekDay,
+                                                r.ResponseTimeHistory.Availability as Available
                                             FROM
-                                                Orion.ResponseTime r
+                                                Orion.Nodes r
                                             WHERE 
-                                                r.Node.Caption='{}' AND
-                                                DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < {}
+                                                r.Caption='{}' AND
+                                                DayDiff ( Tolocal ( r.ResponseTimeHistory.DateTime ) , GetDate ( ) ) < {}
                                             ORDER BY
-                                                r.DateTime
+                                                r.ResponseTimeHistory.DateTime
                                             """.format ( name , days )
                                         )
-
-        # result = self._solarwinds.query (   """
-        #                                     SELECT
-        #                                         Year    ( Tolocal ( r.DateTime ) ) as Year,
-        #                                         Month   ( Tolocal ( r.DateTime ) ) as Month,
-        #                                         Day     ( Tolocal ( r.DateTime ) ) as Day,
-        #                                         Hour    ( Tolocal ( r.DateTime ) ) as Hour,
-        #                                         Minute  ( Tolocal ( r.DateTime ) ) as Minute,
-        #                                         Second  ( Tolocal ( r.DateTime ) ) as Second,
-        #                                         WeekDay ( Tolocal ( r.DateTime ) ) as WeekDay,
-        #                                         r.PercentUtil                      as Util
-        #                                     FROM
-        #                                         Orion.NPM.InterfaceTraffic r
-        #                                     WHERE 
-        #                                         r.Interface.Node.Caption='{}' AND
-        #                                         DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < 30
-        #                                     ORDER BY
-        #                                         r.DateTime
-        #                                     """.format ( name )
-        #                                 )
 
         return result
 
