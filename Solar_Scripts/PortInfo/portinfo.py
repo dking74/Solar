@@ -274,8 +274,7 @@ class SolarwindsEntity ( abc.ABC ):
 		verify = False
 		if not verify:
 			from requests.packages.urllib3.exceptions import InsecureRequestWarning
-			requests.packages.urllib3.disable_warnings ( InsecureRequestWarning )
-		
+			requests.packages.urllib3.disable_warnings ( InsecureRequestWarning )	
 		self._solarwinds = SwisClient ( domain , username , password )
 		
 class PortEntity ( SolarwindsEntity ):
