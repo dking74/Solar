@@ -298,7 +298,6 @@ class IntelligridMig  ( ):
         if legacyInfo: names.append ( legacyStr )
         if siteInfo  : names.append (  siteStr  )
         nameString = ", ".join ( names )
-
         return nameString 
 
     def updateGroupProps  ( self , entity_id , **properties ):
@@ -378,7 +377,6 @@ class IntelligridMig  ( ):
                 try:
                     self._solarwinds.update ( uri + '/CustomProperties' , **properties )
                     print                   ( "Updated Custom Property for node: %s" % node_name )
-
                 except Exception:
                     print ( "Unable to update Custom Property for node: %s" % node_name )
 
@@ -450,11 +448,8 @@ class IntelligridMig  ( ):
                     )
         except Exception:
             print ( "Unable to update group due to internal error")
-
-        else:
-            return newName
-
-        return None
+            return None
+        return newName
 
     def updateMapPoint    ( self , group_id , latitude , longitude ):
 
@@ -526,7 +521,6 @@ class IntelligridMig  ( ):
         name        = nameInput
         filtered    = "filter:/{}[{}]".format ( filterType , filterString )
         applyFilter = [ { 'Name': name , 'Definition' : filtered } ]
-
         return applyFilter
 
     def createGroupProp   ( self , division=None, owning_co=None, asset_type=None, latitude=None, longitude=None,
@@ -575,7 +569,6 @@ class IntelligridMig  ( ):
         # delete all unnecessary items
         for item in del_items:
             cust_prop.pop ( item )
-
         return cust_prop
 
     def createMapPoint    ( self, group_id , latitude , longitude ):
@@ -606,7 +599,6 @@ class IntelligridMig  ( ):
         # create the map point based on properties
         try:
             info = self._solarwinds.create ( 'Orion.WorldMap.Point', **properties )
-
         except Exception as detail:
             print ( detail + " \nUnable to create map point for id: {}".format ( group_id ) )
 
@@ -667,7 +659,6 @@ class IntelligridMig  ( ):
                                             )
                 except Exception:
                     print ( "Unable to create custom property." )
-
             else:
                 print ( "Custom property already exists for: {}".format ( prop ) )
 
@@ -853,7 +844,6 @@ class IntelligridMig  ( ):
         except requests.exceptions.HTTPError:
             print ( "Unable to find ID" )
             return "None"
-
         else:
             if entity_uri [ 'results' ] == []:
                 return "None"
@@ -891,7 +881,6 @@ class IntelligridMig  ( ):
         groupList = []
         if len ( group_query [ 'results' ] ) > 0:
             groupList = [ item [ 'Name' ] for item in group_query [ 'results' ] ]
-           
         return groupList
 
     def getNodeContain    ( self , node_name , existingGroups ):
@@ -936,44 +925,23 @@ class IntelligridMig  ( ):
         # test function for querying data
         result = self._solarwinds.query (   """
                                             SELECT
-                                                Year    ( Tolocal ( r.DateTime ) ) as Year,
-                                                Month   ( Tolocal ( r.DateTime ) ) as Month,
-                                                Day     ( Tolocal ( r.DateTime ) ) as Day,
-                                                Hour    ( Tolocal ( r.DateTime ) ) as Hour,
-                                                Minute  ( Tolocal ( r.DateTime ) ) as Minute,
-                                                Second  ( Tolocal ( r.DateTime ) ) as Second,
-                                                WeekDay ( Tolocal ( r.DateTime ) ) as WeekDay,
-                                                r.Availability                     as Available
+                                                Year    ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as Year,
+                                                Month   ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as Month,
+                                                Day     ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as Day,
+                                                Hour    ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as Hour,
+                                                Minute  ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as Minute,
+                                                Second  ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as Second,
+                                                WeekDay ( Tolocal ( r.ResponseTimeHistory.DateTime ) ) as WeekDay,
+                                                r.ResponseTimeHistory.Availability as Available
                                             FROM
-                                                Orion.ResponseTime r
+                                                Orion.Nodes r
                                             WHERE 
-                                                r.Node.Caption='{}' AND
-                                                DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < {}
+                                                r.Caption='{}' AND
+                                                DayDiff ( Tolocal ( r.ResponseTimeHistory.DateTime ) , GetDate ( ) ) < {}
                                             ORDER BY
-                                                r.DateTime
+                                                r.ResponseTimeHistory.DateTime
                                             """.format ( name , days )
                                         )
-
-        # result = self._solarwinds.query (   """
-        #                                     SELECT
-        #                                         Year    ( Tolocal ( r.DateTime ) ) as Year,
-        #                                         Month   ( Tolocal ( r.DateTime ) ) as Month,
-        #                                         Day     ( Tolocal ( r.DateTime ) ) as Day,
-        #                                         Hour    ( Tolocal ( r.DateTime ) ) as Hour,
-        #                                         Minute  ( Tolocal ( r.DateTime ) ) as Minute,
-        #                                         Second  ( Tolocal ( r.DateTime ) ) as Second,
-        #                                         WeekDay ( Tolocal ( r.DateTime ) ) as WeekDay,
-        #                                         r.PercentUtil                      as Util
-        #                                     FROM
-        #                                         Orion.NPM.InterfaceTraffic r
-        #                                     WHERE 
-        #                                         r.Interface.Node.Caption='{}' AND
-        #                                         DayDiff ( Tolocal ( r.DateTime ) , GetDate ( ) ) < 30
-        #                                     ORDER BY
-        #                                         r.DateTime
-        #                                     """.format ( name )
-        #                                 )
-
         return result
 
 # class GroupInfo       ( )
