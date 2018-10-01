@@ -1,6 +1,6 @@
 from openpyxl import Workbook
 from orionsdk import SwisClient
-from abc      import ABC
+from abc      import ABC, abstractmethod
 import openpyxl, requests, sys , signal , os
 
 class IntelligridMig  ( ):

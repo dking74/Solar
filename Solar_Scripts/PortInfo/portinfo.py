@@ -348,7 +348,8 @@ class PortEntity ( SolarwindsEntity ):
 														FROM
 															Orion.UDT.Endpoint e
 														WHERE
-															e.Ports.ConnectionType=1 and {}
+															( e.Ports.ConnectionType=1 or e.Ports.ConnectionType=2 )
+															and {}
 														""".format ( searchCondition )
 													)
 
