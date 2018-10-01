@@ -8,7 +8,6 @@ class ExcelSheet ( ):
 
 	'''
 	Class name    : ExcelSheet
-
 	Class Purpose : To handle reading and writing to Excel spreadsheet
 	'''
 
@@ -16,7 +15,6 @@ class ExcelSheet ( ):
 
 		'''
 		Method name: __init__
-
 		Method Purpose: To initialize an excel instance
 
 		Parameters:
@@ -39,7 +37,6 @@ class ExcelSheet ( ):
 
 		'''
 		Method name: readFromWorkbook
-
 		Method Purpose: To read from the inputted workbook
 
 		Parameters:
@@ -61,7 +58,6 @@ class ExcelSheet ( ):
 
 		'''
 		Method name: readRowFromWorkbook
-
 		Method Purpose: To read an individual row from Workbook
 
 		Parameters:
@@ -86,7 +82,6 @@ class ExcelSheet ( ):
 
 		'''
 		Method name: writeToWorkbook
-
 		Method Purpose: To write to the inputted workbook
 
 		Parameters: 
@@ -109,7 +104,6 @@ class ExcelSheet ( ):
 	
 		'''
 		Method name: saveWorkBook
-
 		Method Purpose: To save the workbook
 
 		Parameters: None
@@ -123,7 +117,6 @@ class ExcelSheet ( ):
 
 		'''
 		Method name: removeSheetFromWorkbook
-
 		Method Purpose: To remove an inputted sheet from the inputted workbook
 
 		Parameters:
@@ -141,7 +134,6 @@ class ExcelSheet ( ):
 
 		'''
 		Method name: __findReadRange
-
 		Method Purpose: To find the range being read from Excel Worksheet;
 						either the row or column range
 
@@ -165,7 +157,6 @@ class ExcelSheet ( ):
 
 		'''
 		Method name: __getWorkbookActiveSheet
-
 		Method Purpose: Get the Workbooks active sheet
 
 		Parameters: None
@@ -179,7 +170,6 @@ class ExcelSheet ( ):
 
 		'''
 		Method name: _openWorkbook
-
 		Method Purpose: To open the workbook if it is not already
 
 		Parameters:
@@ -199,7 +189,6 @@ class ExcelSheet ( ):
 	
 		'''
 		Method name: setRowHeight
-
 		Method Purpose: To set the row height
 
 		Parameters:
@@ -216,7 +205,6 @@ class ExcelSheet ( ):
 	
 		'''
 		Method name: setColumnWidth
-
 		Method Purpose: To set the column width
 
 		Parameters:
@@ -233,7 +221,6 @@ class ExcelSheet ( ):
 	
 		'''
 		Method name: setRowHeight
-
 		Method Purpose: To set the row height
 
 		Parameters:
@@ -250,7 +237,6 @@ class ExcelSheet ( ):
 	
 		'''
 		Method name: setColumnWidth
-
 		Method Purpose: To set the column width
 
 		Parameters:
@@ -260,14 +246,13 @@ class ExcelSheet ( ):
 		Returns: None
 		'''
 
-		width = worksheet.column_dimensions [ colNum ].width
+		width = worksheet.column_dimensions [ get_column_letter ( colNum ) ].width
 		return width
 
 class SolarwindsEntity ( abc.ABC ):
 
 	'''
 	Class name: SolarwindsEntity
-	
 	Class Purpose: To serve as base class for all Solarwinds entities
 	'''
 		
@@ -275,7 +260,6 @@ class SolarwindsEntity ( abc.ABC ):
 	
 		'''
 		Method name: __init__
-
 		Method Purpose: To start a solarwinds instance
 
 		Parameters:
@@ -290,15 +274,13 @@ class SolarwindsEntity ( abc.ABC ):
 		verify = False
 		if not verify:
 			from requests.packages.urllib3.exceptions import InsecureRequestWarning
-			requests.packages.urllib3.disable_warnings ( InsecureRequestWarning )
-		
+			requests.packages.urllib3.disable_warnings ( InsecureRequestWarning )	
 		self._solarwinds = SwisClient ( domain , username , password )
 		
 class PortEntity ( SolarwindsEntity ):
 
 	'''
 	Class name: PortEntity
-
 	Class Purpose: To obtain individual port details from Solarwinds
 	'''
 
@@ -306,7 +288,6 @@ class PortEntity ( SolarwindsEntity ):
 
 		'''
 		Method name: __init__
-
 		Method Purpose: To initialize a port detail instance
 
 		Parameters:
@@ -325,7 +306,6 @@ class PortEntity ( SolarwindsEntity ):
 
 		'''
 		Method name: getPortInfo
-
 		Method Purpose: To get the important port information from Solarwinds
 
 		Parameters: None
