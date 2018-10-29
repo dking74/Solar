@@ -1,6 +1,6 @@
 from openpyxl import Workbook
 from orionsdk import SwisClient
-from abc      import ABC, abstractmethod
+from abc      import ABC
 import openpyxl, requests, sys , signal , os
 
 class IntelligridMig  ( ):
@@ -298,6 +298,7 @@ class IntelligridMig  ( ):
         if legacyInfo: names.append ( legacyStr )
         if siteInfo  : names.append (  siteStr  )
         nameString = ", ".join ( names )
+
         return nameString 
 
     def updateGroupProps  ( self , entity_id , **properties ):
@@ -377,6 +378,7 @@ class IntelligridMig  ( ):
                 try:
                     self._solarwinds.update ( uri + '/CustomProperties' , **properties )
                     print                   ( "Updated Custom Property for node: %s" % node_name )
+
                 except Exception:
                     print ( "Unable to update Custom Property for node: %s" % node_name )
 
@@ -448,8 +450,11 @@ class IntelligridMig  ( ):
                     )
         except Exception:
             print ( "Unable to update group due to internal error")
-            return None
-        return newName
+
+        else:
+            return newName
+
+        return None
 
     def updateMapPoint    ( self , group_id , latitude , longitude ):
 
@@ -521,6 +526,7 @@ class IntelligridMig  ( ):
         name        = nameInput
         filtered    = "filter:/{}[{}]".format ( filterType , filterString )
         applyFilter = [ { 'Name': name , 'Definition' : filtered } ]
+
         return applyFilter
 
     def createGroupProp   ( self , division=None, owning_co=None, asset_type=None, latitude=None, longitude=None,
@@ -569,6 +575,7 @@ class IntelligridMig  ( ):
         # delete all unnecessary items
         for item in del_items:
             cust_prop.pop ( item )
+
         return cust_prop
 
     def createMapPoint    ( self, group_id , latitude , longitude ):
@@ -599,6 +606,7 @@ class IntelligridMig  ( ):
         # create the map point based on properties
         try:
             info = self._solarwinds.create ( 'Orion.WorldMap.Point', **properties )
+
         except Exception as detail:
             print ( detail + " \nUnable to create map point for id: {}".format ( group_id ) )
 
@@ -659,6 +667,7 @@ class IntelligridMig  ( ):
                                             )
                 except Exception:
                     print ( "Unable to create custom property." )
+
             else:
                 print ( "Custom property already exists for: {}".format ( prop ) )
 
@@ -844,6 +853,7 @@ class IntelligridMig  ( ):
         except requests.exceptions.HTTPError:
             print ( "Unable to find ID" )
             return "None"
+
         else:
             if entity_uri [ 'results' ] == []:
                 return "None"
@@ -881,6 +891,7 @@ class IntelligridMig  ( ):
         groupList = []
         if len ( group_query [ 'results' ] ) > 0:
             groupList = [ item [ 'Name' ] for item in group_query [ 'results' ] ]
+           
         return groupList
 
     def getNodeContain    ( self , node_name , existingGroups ):
@@ -910,12 +921,16 @@ class IntelligridMig  ( ):
                                                 WHERE
                                                     c.Name LIKE '{}%'
                                                 """.format ( node_name )
-                                             )
+                                            )
 
         result_list = node_group [ 'results' ]
         if len ( result_list ) > 0:
             for group_holder in result_list:
-                if group_holder [ 'Name' ] in existingGroups: return True, group_holder [ 'Name' ], group_holder [ 'ID' ]
+                if group_holder [ 'Name' ] in existingGroups: 
+                    group_name = group_holder [ 'Name' ]
+                    if group_name[0] == ' ':
+                        del group_name[0]
+                    return True, group_name, group_holder [ 'ID' ]
        
         # return that the group did not exist
         return False, "None", 0
@@ -942,6 +957,7 @@ class IntelligridMig  ( ):
                                                 r.ResponseTimeHistory.DateTime
                                             """.format ( name , days )
                                         )
+
         return result
 
 # class GroupInfo       ( )
