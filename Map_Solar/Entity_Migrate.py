@@ -915,7 +915,11 @@ class IntelligridMig  ( ):
         result_list = node_group [ 'results' ]
         if len ( result_list ) > 0:
             for group_holder in result_list:
-                if group_holder [ 'Name' ] in existingGroups: return True, group_holder [ 'Name' ], group_holder [ 'ID' ]
+                if group_holder [ 'Name' ] in existingGroups:
+                    group_name = group_holder [ 'Name' ]
+                    if group_name[0] == ' ':
+                        del group_name[0]
+                    return True, group_name, group_holder [ 'ID' ]
        
         # return that the group did not exist
         return False, "None", 0
