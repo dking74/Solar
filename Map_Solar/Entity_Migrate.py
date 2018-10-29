@@ -78,7 +78,7 @@ class IntelligridMig  ( ):
 
         # get the workbook and worksheet locaclly
         self._intelligridBook  = openpyxl.load_workbook ( file )
-        self._intelligridSheet = self._intelligridBook.active
+        self._intelligridSheet = self._intelligridBook['Site ID']
 
     def _setupBaseGroups ( self , baseGroup ):
 
@@ -96,6 +96,20 @@ class IntelligridMig  ( ):
         # get top level group
         self._baseGroupID, uri = self.createGroup  ( baseGroup , "This is the base-level group" , [] )
 
+    def _removeGroupsFromList(self, removeList, *groups):
+
+        """Remove groups from list"""
+        for group in groups:
+            try:
+                removeList.remove(group)
+            except ValueError:
+                try:
+                    groupName = " " + group
+                    removeList.remove(groupName)
+                except ValueError:
+                    pass
+        return removeList
+		
     def readWorkbook     ( self , baseGroup ):
 
         '''
@@ -182,14 +196,15 @@ class IntelligridMig  ( ):
                                                         ] 
                                                     )
 
+                if lgroup[0] == ' ':
+                    lgroup
                 if   ( legG_exists and sitG_exists ) and ( lID == sID ):
-                    existingList.remove (          lgroup           )
+                    existingList = self._removeGroupsFromList(existingList, lgroup)
                     self.updateGroup    ( lID , loc_name , loc_name )
                     group_id = lID
 
                 elif ( legG_exists and sitG_exists ) and ( lID != sID ):
-                    existingList.remove   (          lgroup           )
-                    existingList.remove   (          sgroup           )
+                    existingList = self._removeGroupsFromList(existingList, lgroup, sgroup)
                     self.deleteGroup      (          sgroup           )
                     self.updateGroup      ( lID , loc_name , loc_name )
                     self.deleteDefinition (           lID             )
@@ -197,14 +212,14 @@ class IntelligridMig  ( ):
                     group_id = lID
 
                 elif ( legG_exists and not sitG_exists ):
-                    existingList.remove   (           lgroup          )
+                    existingList = self._removeGroupsFromList(existingList, lgroup)
                     self.updateGroup      ( lID , loc_name , loc_name )
                     self.deleteDefinition (            lID            )
                     self.updateDefinition (      lID , dynamicQuery   )
                     group_id = lID
 
                 elif ( sitG_exists and not legG_exists ):
-                    existingList.remove   (           sgroup          )
+                    existingList = self._removeGroupsFromList(existingList, sgroup)
                     self.updateGroup      ( sID , loc_name , loc_name )
                     self.deleteDefinition (            sID            )
                     self.updateDefinition (      sID , dynamicQuery   )
@@ -330,10 +345,10 @@ class IntelligridMig  ( ):
 
         # update the entity with inputted properties
         try:
-            self._solarwinds.update ( uri + '/CustomProperties' , **properties )
+            self._solarwinds.update ( str(uri)+ '/CustomProperties' , **properties )
 
         except Exception as detail:
-            print ( detail + " \nUnable to update custom properties for id: {}".format ( entity_id ) )
+            print ( str(detail)  + " \nUnable to update custom properties for id: {}".format ( entity_id ) )
 
     def updateNodeProp    ( self , node_name , cust_prop , value ):
         
@@ -600,7 +615,7 @@ class IntelligridMig  ( ):
         try:
             info = self._solarwinds.create ( 'Orion.WorldMap.Point', **properties )
         except Exception as detail:
-            print ( detail + " \nUnable to create map point for id: {}".format ( group_id ) )
+            print ( str(detail) + "\nUnable to create map point for id: {}".format ( group_id ) )
 
     def createCustProps   ( self , entity_type , **properties ):
 
@@ -916,10 +931,7 @@ class IntelligridMig  ( ):
         if len ( result_list ) > 0:
             for group_holder in result_list:
                 if group_holder [ 'Name' ] in existingGroups:
-                    group_name = group_holder [ 'Name' ]
-                    if group_name[0] == ' ':
-                        del group_name[0]
-                    return True, group_name, group_holder [ 'ID' ]
+                    return True, group_holder [ 'Name' ], group_holder [ 'ID' ]
        
         # return that the group did not exist
         return False, "None", 0
