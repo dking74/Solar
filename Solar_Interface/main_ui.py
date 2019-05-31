@@ -70,7 +70,7 @@ class Main_UI         ( QMainWindow ):
 
 		# Initialize SolarWinds console
 		try:
-			self._solar = SwisClient ( "solarwinds.ameren.com" , self.__username_text.text ( ) , self.__password_text.text ( ) )
+			self._solar = SwisClient ( "" , self.__username_text.text ( ) , self.__password_text.text ( ) ) # Server name removed for security
 			self._solar.query        (                              "SELECT AccountID FROM Orion.Accounts"                     )
 
 		# handler exception with bringing up user dialog
